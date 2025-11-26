@@ -1,6 +1,5 @@
 package com.example.project;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -27,7 +26,6 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Context context = this;
         categoryName = this.getResources().getStringArray(R.array.category_names);
         lvCategory = findViewById(R.id.listView);
         CategoryAdapter categoryAdapter = new CategoryAdapter(this, categoryName, categoryImages, categoryDesc);
