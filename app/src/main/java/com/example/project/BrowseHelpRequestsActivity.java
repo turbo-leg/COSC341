@@ -12,9 +12,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class BrowseHelpRequestsActivity extends AppCompatActivity {
     ListView lvCategory;
-    String[] categoryName;
-    String[] categoryDesc = {"Gardening", "Car Maintenance", "Babysitting", "Cooking","Pet Care", "Moving"};
-    int[] categoryImages = {R.drawable.gardening, R.drawable.carmaintenance, R.drawable.babysitting, R.drawable.cooking,R.drawable.petcare,R.drawable.moving};
+    String[][] postingTitleAndUser = {  {"Catering for Small Family Gathering", "John Doe", "Cooking"},
+                                        {"Help Weeding Garden", "John Doe", "Gardening"},
+                                        {"Help Moving Couch", "Rose Gale","Moving"},
+                                        {"Babysitting for Wednesday","Jim Rolland","Babysitting"},
+                                        {"Dog Walking for One Hour", "Cathy Franks","Pet Care"}};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +28,8 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        categoryName = this.getResources().getStringArray(R.array.category_names);
         lvCategory = findViewById(R.id.listView);
-        CategoryAdapter categoryAdapter = new CategoryAdapter(this, categoryName, categoryImages, categoryDesc);
+        CategoryAdapter categoryAdapter = new CategoryAdapter(this, postingTitleAndUser);
         lvCategory.setAdapter(categoryAdapter);
     }
 

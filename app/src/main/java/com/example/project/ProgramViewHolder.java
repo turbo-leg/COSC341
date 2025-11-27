@@ -7,11 +7,11 @@ import android.widget.TextView;
 public class ProgramViewHolder {
 
     ImageView itemImage;
-    TextView categoryName;
-    TextView categoryDesc;
+    TextView postingTitle;
+    TextView postingUser;
     ProgramViewHolder(View v){
         itemImage = v.findViewById(R.id.imageView);
-        categoryName = v.findViewById(R.id.textView1);
-        categoryDesc = v.findViewById(R.id.textView2);
+        postingTitle = v.findViewById(R.id.textView1);
+        postingUser = v.findViewById(R.id.textView2);
     }
 }
