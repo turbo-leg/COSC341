@@ -7,5 +7,12 @@
         <item>Cooking</item>
         <item>Pet Care</item>
         <item>Moving</item>
+        <item>Miscellaneous</item>
+    </string-array>
+    <string-array name="sort_options">
+        <item>Sort By</item>
+        <item>Category</item>
+        <item>Date Added</item>
+        <item>Requester Rating</item>
     </string-array>
 </resources>
