@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project">
         <activity
+            android:name=".ViewStatistics"
+            android:exported="false" />
+        <activity
             android:name=".BrowseHelpRequestsActivity"
             android:exported="true">
             <intent-filter>
