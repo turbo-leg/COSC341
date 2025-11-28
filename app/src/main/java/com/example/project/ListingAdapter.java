@@ -7,15 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public class CategoryAdapter extends ArrayAdapter<String> {
+public class ListingAdapter extends ArrayAdapter<String> {
     Context context;
     int[] images = {R.drawable.gardening, R.drawable.carmaintenance, R.drawable.babysitting, R.drawable.cooking,R.drawable.petcare,R.drawable.moving};;
     String[][] postingTitleAndUser;
 
-    public CategoryAdapter(Context context, String[][] postingTitleAndUser) {
+    public ListingAdapter(Context context, String[][] postingTitleAndUser) {
         super(context, R.layout.single_item, R.id.textView1, new String[postingTitleAndUser.length]);
         this.context = context;
         this.postingTitleAndUser = postingTitleAndUser;
