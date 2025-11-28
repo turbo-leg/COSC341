@@ -2,19 +2,16 @@ package com.example.project;
 
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -25,16 +22,15 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
     private AutoCompleteTextView actvCategory;
     private Button btnCreateRequest;
 
+    private DatabaseReference databaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_help_request);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        // Initialize Firebase Database reference under a "listings" node
+        databaseReference = FirebaseDatabase.getInstance().getReference("listings");
 
         // Initialize UI components
         etRequestTitle = findViewById(R.id.etRequestTitle);
@@ -44,10 +40,8 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         actvCategory = findViewById(R.id.actvCategory);
         btnCreateRequest = findViewById(R.id.btnCreateRequest);
 
-        // Set up the category dropdown menu
+        // Setup UI helpers
         setupCategoryDropdown();
-
-        // Set up the time picker dialog
         setupTimePicker();
 
         // Set listener for the create button
@@ -55,54 +49,69 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
     }
 
     private void setupCategoryDropdown() {
-        // Define the categories
         String[] categories = {"Cooking", "Gardening", "Moving", "Babysitting", "Pet Care", "Other"};
-        // Create an adapter for the AutoCompleteTextView
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categories);
         actvCategory.setAdapter(adapter);
     }
 
     private void setupTimePicker() {
         etTime.setOnClickListener(v -> {
-            // Get current time to pre-fill the picker
             Calendar calendar = Calendar.getInstance();
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
 
-            // Create a new TimePickerDialog
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, selectedHour, selectedMinute) -> {
-                // Format the time and set it to the EditText
+                // Using a simpler date/time format for this example
+                String date = String.format(Locale.getDefault(), "%d-%02d-%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
                 String time = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
-                etTime.setText(time);
-            }, hour, minute, false); // Use 'false' for 24-hour format, 'true' for AM/PM
+                etTime.setText(date + " " + time);
+            }, hour, minute, false); // false for 24-hour format
 
             timePickerDialog.show();
         });
     }
 
     private void createHelpRequest() {
-        // Get text from all fields
         String title = etRequestTitle.getText().toString().trim();
         String category = actvCategory.getText().toString().trim();
         String address = etAddress.getText().toString().trim();
-        String time = etTime.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
+        String startDateTime = etTime.getText().toString().trim();
+        String requesterName = User.idNum+" "; // Replace with actual user name when User has logic
 
-        // Simple validation
-        if (title.isEmpty() || category.isEmpty() || address.isEmpty() || time.isEmpty() || description.isEmpty()) {
+
+        // Validation
+        if (title.isEmpty() || category.isEmpty() || address.isEmpty() || startDateTime.isEmpty() || description.isEmpty()) {
             Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // --- Data Handling Logic Goes Here ---
-        // At this point, you have all the data. You can now:
-        // 1. Create a "HelpRequest" model object.
-        // 2. Save it to a database (like Firebase) or pass it back to a previous activity.
-        // For now, we'll just show a success message.
+        // --- Firebase Data Handling Logic ---
 
-        Toast.makeText(this, "Help request created successfully!", Toast.LENGTH_LONG).show();
+        // Generate a unique ID using push()
+        String listingId = databaseReference.push().getKey();
+        if (listingId == null) {
+            Toast.makeText(this, "Could not generate a listing ID.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Optional: finish this activity to return to the previous screen
-        finish();
+        // Create a Listing object
+        Listing newListing = new Listing(title, requesterName, category, description, startDateTime, address);
+        // Set the generated ID on the object
+        newListing.setId(listingId);
+
+        // Save the Listing object to Firebase
+        databaseReference.child(listingId).setValue(newListing).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(this, "Help request posted successfully!", Toast.LENGTH_LONG).show();
+                finish(); // Go back to the previous screen on success
+            } else {
+                String errorMessage = "Failed to post request.";
+                if (task.getException() != null) {
+                    errorMessage += " " + task.getException().getMessage();
+                }
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
