@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/material_dynamic_neutral60"
     tools:context=".BrowseHelpRequestsActivity">
 
     <ListView
@@ -54,7 +55,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/border_style"
-        android:entries="@array/category_names"
+        android:entries="@array/sort_options"
         app:layout_constraintBottom_toTopOf="@+id/listView"
         app:layout_constraintDimensionRatio="2.4:1"
         app:layout_constraintEnd_toEndOf="parent"
