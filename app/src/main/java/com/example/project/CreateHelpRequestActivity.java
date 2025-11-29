@@ -77,7 +77,7 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         String address = etAddress.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
         String startDateTime = etTime.getText().toString().trim();
-        String requesterName = User.idNum+" "; // Replace with actual user name when User has logic
+        String requesterName = " "; //TODO: Replace with actual user name when User has logic
 
 
         // Validation
