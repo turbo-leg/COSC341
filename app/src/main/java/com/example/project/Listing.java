@@ -24,6 +24,7 @@ public class Listing {
         this.startDateTime = startDateTime;
         this.address = address;
         this.isComplete = false;
+        this.id = null; // This will be set by Firebase when the object is saved
     }
 
     public String getId() {
