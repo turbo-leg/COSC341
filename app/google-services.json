@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "567083317950",
+    "firebase_url": "https://neighborhood-help-exchange-default-rtdb.firebaseio.com",
+    "project_id": "neighborhood-help-exchange",
+    "storage_bucket": "neighborhood-help-exchange.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567083317950:android:8ae22f84eb40891fd4fcef",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYZpMKCdoXblKpF7QxwQUvyVPoziVgsRs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

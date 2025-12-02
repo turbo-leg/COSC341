@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project">
         <activity
+            android:name=".MessagesListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SendingReceivingMessagesActivity"
+            android:exported="true" />
+        <activity
             android:name=".ViewStatistics"
             android:exported="false" />
         <activity
