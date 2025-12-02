@@ -24,6 +24,9 @@
             android:name=".CreateHelpRequestActivity"
             android:exported="false" />
         <activity
+            android:name=".ReviewActivity"
+            android:exported="false" />
+        <activity
             android:name=".BrowseHelpRequestsActivity"
             android:exported="true">
             <intent-filter>
