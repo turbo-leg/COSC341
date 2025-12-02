@@ -199,11 +199,11 @@ public class ViewStatistics extends AppCompatActivity {
             startActivity(new Intent(this, CreateHelpRequestActivity.class));
         } else if (id == R.id.hamBrowse) {
             startActivity(new Intent(this, BrowseHelpRequestsActivity.class));
-        } else /*if (id == R.id.hamReview) {
+        } else if (id == R.id.hamReview) {
             startActivity(new Intent(this, ReviewActivity.class));
         } else if (id == R.id.hamMessage) {
             startActivity(new Intent(this, MessagesListActivity.class));
-        } else*/ if (id == R.id.hamStats) {
+        } else if (id == R.id.hamStats) {
             startActivity(new Intent(this, ViewStatistics.class));
         }
     }
