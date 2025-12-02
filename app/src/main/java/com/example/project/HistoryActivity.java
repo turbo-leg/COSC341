@@ -89,18 +89,14 @@ public class HistoryActivity extends AppCompatActivity {
                         if (helperName == null) helperName = listing.getHelper();
                         listing.setHelperName(helperName);
 
-                        // Check if completed and user is involved
-                        boolean isRequester = CURRENT_USER_NAME.equals(listing.getRequesterName());
-                        boolean isHelper = CURRENT_USER_NAME.equals(listing.getHelperName());
-
-                        // Include if the user is involved and the listing is complete
-                        if ((isRequester || isHelper) && listing.isComplete()) {
+                        // Include if the listing is complete
+                        if (listing.isComplete()) {
                             historyList.add(listing);
-                            String role = isRequester ? "Requester" : "Helper";
-                            String otherParty = isRequester ? listing.getHelperName() : listing.getRequesterName();
-                            if (otherParty == null) otherParty = "None";
-                            
-                            displayList.add(listing.getTitle() + " (" + role + ")\nWith: " + otherParty);
+                            String display = listing.getTitle();
+                            if (listing.getHelperName() != null) {
+                                display += "\nHelper: " + listing.getHelperName();
+                            }
+                            displayList.add(display);
                         }
                     }
                 }
@@ -123,23 +119,12 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void openReviewPage(Listing listing) {
-        if (!listing.isComplete()) {
-            Toast.makeText(this, "Cannot review: Listing not complete", Toast.LENGTH_SHORT).show();
-            return;
+        // Simple demo: always allow review of the helper
+        String helperName = listing.getHelperName();
+        if (helperName == null) {
+             Toast.makeText(this, "No helper to review", Toast.LENGTH_SHORT).show();
+             return;
         }
-
-        if (CURRENT_USER_NAME.equals(listing.getRequesterName())) {
-            // I am the requester, reviewing the helper
-            String helperName = listing.getHelperName();
-            if (helperName == null) {
-                Toast.makeText(this, "Cannot review: No helper assigned", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            // Pass listing ID and helper name
-            ReviewActivity.start(this, listing.getId(), helperName);
-        } else {
-            // I am the helper.
-            Toast.makeText(this, "Only requesters can leave reviews", Toast.LENGTH_SHORT).show();
-        }
+        ReviewActivity.start(this, listing.getId(), helperName);
     }
 }
