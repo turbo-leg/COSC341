@@ -15,13 +15,13 @@
             android:name=".LeaderBoardActivity"
             android:exported="false" />
         <activity
-            android:name=".BrowseHelpRequestsActivity"
+            android:name=".ViewStatistics"
             android:exported="false" />
         <activity
             android:name=".CreateHelpRequestActivity"
             android:exported="false" />
         <activity
-            android:name=".ViewStatistics"
+            android:name=".BrowseHelpRequestsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
