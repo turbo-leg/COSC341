@@ -1,6 +1,8 @@
 package com.example.project;
 
 public class Listing {
+    String address;
+    String id;
     String title;
     String requesterName;
     String helperName;
@@ -8,19 +10,31 @@ public class Listing {
     String desc;
     boolean isComplete;
     String startDateTime;
-    String endDateTime;
 
-    public Listing(String title, String requesterName, String category, String desc, String startDateTime, String endDateTime) {
+    public Listing() {
+        // Default constructor required for Firebase
+    }
+
+    public Listing(String title, String requesterName, String category, String desc, String startDateTime, String address) {
         this.title = title;
         this.requesterName = requesterName;
         this.helperName = null;
         this.category = category;
         this.desc = desc;
         this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.address = address;
         this.isComplete = false;
-
+        this.id = null; // This will be set by Firebase when the object is saved
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
 
     public String getTitle() {
         return title;
@@ -78,11 +92,11 @@ public class Listing {
         this.startDateTime = startDateTime;
     }
 
-    public String getEndDateTime() {
-        return endDateTime;
+    public String getAddress() {
+        return address;
     }
 
-    public void setEndDateTime(String endDateTime) {
-        this.endDateTime = endDateTime;
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
