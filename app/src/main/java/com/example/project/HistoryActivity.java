@@ -62,7 +62,8 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void fetchHistory() {
-        DatabaseReference postingsRef = mDatabase.child("Postings");
+        // Assuming listings are at the root level based on the provided DB structure
+        DatabaseReference postingsRef = mDatabase; 
         postingsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -70,21 +71,29 @@ public class HistoryActivity extends AppCompatActivity {
                 displayList.clear();
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    Listing listing = postSnapshot.getValue(Listing.class);
-                    if (listing != null) {
+                    // Skip the Reviews node
+                    if ("Reviews".equals(postSnapshot.getKey())) continue;
+
+                    Listing listing = null;
+                    try {
+                        listing = postSnapshot.getValue(Listing.class);
+                    } catch (Exception e) {
+                        continue;
+                    }
+
+                    if (listing != null && listing.getTitle() != null) {
                         listing.setId(postSnapshot.getKey()); // Ensure ID is set
 
+                        // Normalize helper name
+                        String helperName = listing.getHelperName();
+                        if (helperName == null) helperName = listing.getHelper();
+                        listing.setHelperName(helperName);
+
                         // Check if completed and user is involved
-                        // Note: Using names for comparison as per existing code patterns, ideally should be IDs
                         boolean isRequester = CURRENT_USER_NAME.equals(listing.getRequesterName());
                         boolean isHelper = CURRENT_USER_NAME.equals(listing.getHelperName());
 
-                        // For testing purposes, we might want to show all listings or just completed ones
-                        // listing.isComplete() should be checked.
-                        // For now, I'll include it if the user is involved.
-                        // TODO: Uncomment isComplete check when data is real
-                        // if (listing.isComplete() && (isRequester || isHelper)) {
-
+                        // Include if the user is involved
                         if (isRequester || isHelper) {
                             historyList.add(listing);
                             String role = isRequester ? "Requester" : "Helper";
@@ -114,25 +123,23 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void openReviewPage(Listing listing) {
-        String reviewerId = CURRENT_USER_ID;
-        String revieweeId;
-        String revieweeName;
-
-        if (CURRENT_USER_NAME.equals(listing.getRequesterName())) {
-            // I am the requester, reviewing the helper
-            revieweeName = listing.getHelperName();
-            revieweeId = "user_helper_placeholder"; // We need the helper's ID. Listing might not have it, only name.
-        } else {
-            // I am the helper, reviewing the requester
-            revieweeName = listing.getRequesterName();
-            revieweeId = "user_requester_placeholder";
-        }
-
-        if (revieweeName == null) {
-            Toast.makeText(this, "Cannot review: No other party assigned", Toast.LENGTH_SHORT).show();
+        if (!listing.isComplete()) {
+            Toast.makeText(this, "Cannot review: Listing not complete", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        ReviewActivity.start(this, reviewerId, revieweeId, listing.getId(), revieweeName);
+        if (CURRENT_USER_NAME.equals(listing.getRequesterName())) {
+            // I am the requester, reviewing the helper
+            String helperName = listing.getHelperName();
+            if (helperName == null) {
+                Toast.makeText(this, "Cannot review: No helper assigned", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // Pass listing ID and helper name
+            ReviewActivity.start(this, listing.getId(), helperName);
+        } else {
+            // I am the helper.
+            Toast.makeText(this, "Only requesters can leave reviews", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -42,23 +42,6 @@
         app:layout_constraintTop_toBottomOf="@+id/tvRevieweeName"
         android:layout_marginTop="24dp"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilReviewComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Share your experience"
-        app:layout_constraintTop_toBottomOf="@+id/ratingBar"
-        android:layout_marginTop="24dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etReviewComment"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:gravity="top|start"
-            android:inputType="textMultiLine" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
     <Button
         android:id="@+id/btnSubmitReview"
         android:layout_width="match_parent"

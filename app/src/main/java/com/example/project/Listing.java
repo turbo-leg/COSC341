@@ -10,6 +10,7 @@ public class Listing {
     String desc;
     boolean isComplete;
     String startDateTime;
+    String helper; // Added to match potential DB field 'helper'
 
     public Listing() {
         // Default constructor required for Firebase
@@ -98,5 +99,13 @@ public class Listing {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getHelper() {
+        return helper;
+    }
+
+    public void setHelper(String helper) {
+        this.helper = helper;
     }
 }
