@@ -83,7 +83,7 @@ public class HistoryActivity extends AppCompatActivity {
                         listing = postSnapshot.getValue(Listing.class);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        displayList.add("Error parsing: " + postSnapshot.getKey());
+                        displayList.add("Error parsing " + postSnapshot.getKey() + ": " + e.getMessage());
                         continue;
                     }
 
@@ -102,6 +102,7 @@ public class HistoryActivity extends AppCompatActivity {
                         if (listing.getTitle() == null) {
                              if (listing.getRequesterName() == null && listing.getDesc() == null) {
                                  // Likely not a listing object
+                                 displayList.add("Skipping " + postSnapshot.getKey() + ": No title/requester/desc");
                                  continue;
                              }
                              listing.setTitle("Untitled Listing");
@@ -121,12 +122,13 @@ public class HistoryActivity extends AppCompatActivity {
                         if (listing.getHelperName() != null) {
                             display += "\nHelper: " + listing.getHelperName();
                         }
-                        // display += "\nKey: " + postSnapshot.getKey(); // Optional debug info
                         displayList.add(display);
+                    } else {
+                        displayList.add("Null listing for " + postSnapshot.getKey());
                     }
                 }
 
-                if (historyList.isEmpty()) {
+                if (displayList.isEmpty()) {
                     tvNoHistory.setText("No transactions found.\nScanned " + count + " items.");
                     tvNoHistory.setVisibility(View.VISIBLE);
                     lvHistory.setVisibility(View.GONE);
