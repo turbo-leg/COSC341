@@ -73,6 +73,34 @@ public class ViewStatistics extends AppCompatActivity {
         // Open drawer on button click
         hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.closeHam) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamNewReq) {
+                    Intent intent = new Intent(ViewStatistics.this, CreateHelpRequestActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamBrowse) {
+                    Intent intent = new Intent(ViewStatistics.this, BrowseHelpRequestsActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamReview) {
+                    Intent intent = new Intent(ViewStatistics.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamMessage) {
+                    Intent intent = new Intent(ViewStatistics.this, MessagesListActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamStats) {
+                    // Already here
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                }
+                
+                return true;
+            }
+        });
+
         // Use default instance
         root = FirebaseDatabase.getInstance().getReference();
         getStatistics();
