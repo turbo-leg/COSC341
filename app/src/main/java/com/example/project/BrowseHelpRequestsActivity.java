@@ -1,17 +1,11 @@
 package com.example.project;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.DatePicker;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -21,9 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,6 +57,10 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm");
 
+    private DrawerLayout drawerLayout;
+    private NavigationView navView;
+    private ImageButton hamButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,52 +71,37 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        minStartDateTime = MIN_DATE_TIME;
-        maxStartDateTime = MAX_DATE_TIME;
-        filters = getResources().getStringArray(R.array.sort_options);
-        selectedCategories = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.category_names)));
-        listingRef = FirebaseDatabase.getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/").getReference("Listings");
 
-//        Listing l1 = new Listing(
-//                "Catering for Small Family Gathering",
-//                "John Doe",
-//                "Cooking",
-//                "Need some help assembling charcuterie boards for a small family gathering.",
-//                "12/12/2025 09:00",
-//                "1234 Button Road");
-//        listingRef.child("l1").setValue(l1);
-//        Listing l2 = new Listing(
-//                "Help Weeding Garden",
-//                "John Doe",
-//                "Gardening",
-//                "Need some help weeding my garden.",
-//                "31/12/2025 11:00",
-//                "1234 Button Road");
-//        listingRef.child("l2").setValue(l2);
-//        Listing l3 = new Listing(
-//                "Help Moving Couch",
-//                "Rose Gale",
-//                "Moving",
-//                "Giving away my couch to a family member and need help getting it to them.",
-//                "09/12/2025 09:00",
-//                "5678 Button Road");
-//        listingRef.child("l3").setValue(l3);
-//        Listing l4 = new Listing(
-//                "Babysitting for Wednesday",
-//                "Jim Rolland",
-//                "Babysitting",
-//                "Need someone to babysit my 2 kids while I'm out for dinner Wednesday night.",
-//                "03/12/2025 16:00",
-//                "2222 Button Road");
-//        listingRef.child("l4").setValue(l4);
-//        Listing l5 = new Listing(
-//                "Dog Walking for One Hour",
-//                "Cathy Franks",
-//                "Pet Care",
-//                "My dog needs its daily walk and I will not be home to do it.",
-//                "07/12/2025 11:00",
-//                "1111 Button Road");
-//        listingRef.child("l5").setValue(l5);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navView = findViewById(R.id.nav_view);
+        hamButton = findViewById(R.id.hamButton);
+
+        hamButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.hamReview) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamStats) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, ViewStatistics.class);
+                    startActivity(intent);
+                }
+                // Add other menu items here as needed
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+        root = FirebaseDatabase.getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/").getReference();
+        intializeList();
         lvCategory = findViewById(R.id.listView);
         sortSpin = findViewById(R.id.spinner);
         Log.e("COSC341", "Before intializeList()");

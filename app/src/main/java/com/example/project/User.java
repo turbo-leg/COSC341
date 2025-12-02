@@ -6,7 +6,6 @@ public class User {
     private int idNum;
     private String userId; // This should be the unique ID from Firebase Auth
     private String name;
-    private int rating;
 
     public User(String userId, String name) {
         this.userId = userId;
