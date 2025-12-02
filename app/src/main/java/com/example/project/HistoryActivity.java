@@ -93,8 +93,8 @@ public class HistoryActivity extends AppCompatActivity {
                         boolean isRequester = CURRENT_USER_NAME.equals(listing.getRequesterName());
                         boolean isHelper = CURRENT_USER_NAME.equals(listing.getHelperName());
 
-                        // Include if the user is involved
-                        if (isRequester || isHelper) {
+                        // Include if the user is involved and the listing is complete
+                        if ((isRequester || isHelper) && listing.isComplete()) {
                             historyList.add(listing);
                             String role = isRequester ? "Requester" : "Helper";
                             String otherParty = isRequester ? listing.getHelperName() : listing.getRequesterName();
