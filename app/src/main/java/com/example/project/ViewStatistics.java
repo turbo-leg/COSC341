@@ -36,9 +36,7 @@ public class ViewStatistics extends AppCompatActivity {
     private boolean listingsLoaded = false;
     private boolean reviewsLoaded = false;
     private DatabaseReference root;
-    private ImageButton hamButton;
     private DrawerLayout drawerLayout;
-    private NavigationView navView;
     private int listingsCreated = 0;
     private int totalRating = 0;
     private int numberOfReviews = 0;
@@ -62,8 +60,8 @@ public class ViewStatistics extends AppCompatActivity {
             return insets;
         });
        drawerLayout = findViewById(R.id.drawer_layout);
-       hamButton = findViewById(R.id.hamButton);
-       navView = findViewById(R.id.nav_view);
+       ImageButton hamButton = findViewById(R.id.hamButton);
+       NavigationView navView = findViewById(R.id.nav_view);
 
         // Open drawer on button click
         hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
@@ -202,7 +200,7 @@ public class ViewStatistics extends AppCompatActivity {
         } else if (id == R.id.hamBrowse) {
             startActivity(new Intent(this, BrowseHelpRequestsActivity.class));
         } else /*if (id == R.id.hamReview) {
-            startActivity(new Intent(this, LeaveReviewActivity.class));
+            startActivity(new Intent(this, ReviewActivity.class));
         } else if (id == R.id.hamMessage) {
             startActivity(new Intent(this, MessagesListActivity.class));
         } else*/ if (id == R.id.hamStats) {
