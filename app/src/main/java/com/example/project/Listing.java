@@ -1,16 +1,16 @@
 package com.example.project;
 
 public class Listing {
-    String address;
-    String id;
-    String title;
-    String requesterName;
-    String helperName;
-    String category;
-    String desc;
-    boolean complete;
-    String startDateTime;
-    String helper; // Added to match potential DB field 'helper'
+    public String address;
+    public String id;
+    public String title;
+    public String requesterName;
+    public String helperName;
+    public String category;
+    public String desc;
+    public boolean complete;
+    public String startDateTime;
+    public String helper; // Added to match potential DB field 'helper'
 
     public Listing() {
         // Default constructor required for Firebase

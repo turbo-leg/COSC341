@@ -83,6 +83,14 @@ public class HistoryActivity extends AppCompatActivity {
                     }
 
                     if (listing != null) {
+                        // Manually check 'complete' field if mapping failed or to be sure
+                        if (!listing.isComplete()) {
+                            Boolean isCompleteObj = postSnapshot.child("complete").getValue(Boolean.class);
+                            if (isCompleteObj != null && isCompleteObj) {
+                                listing.setComplete(true);
+                            }
+                        }
+
                         // If title is null, it might not be a valid listing, but let's try to use it if it has other fields
                         if (listing.getTitle() == null) {
                              // Try to see if it's a valid object
