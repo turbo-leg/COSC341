@@ -72,64 +72,26 @@ public class HistoryActivity extends AppCompatActivity {
                 displayList.clear();
 
                 long count = snapshot.getChildrenCount();
-                // Toast.makeText(HistoryActivity.this, "Found " + count + " items", Toast.LENGTH_SHORT).show();
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    String key = postSnapshot.getKey();
                     // Skip the Reviews node
-                    if ("Reviews".equals(postSnapshot.getKey())) continue;
+                    if ("Reviews".equals(key)) continue;
 
-                    Listing listing = null;
-                    try {
-                        listing = postSnapshot.getValue(Listing.class);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        displayList.add("Error parsing " + postSnapshot.getKey() + ": " + e.getMessage());
+                    // Check if this is a container node
+                    if ("Listings".equals(key) || "Postings".equals(key)) {
+                        for (DataSnapshot innerSnapshot : postSnapshot.getChildren()) {
+                            processListingSnapshot(innerSnapshot);
+                        }
                         continue;
                     }
 
-                    if (listing != null) {
-                        // Manually check 'complete' field
-                        if (!listing.isComplete()) {
-                            Object completeObj = postSnapshot.child("complete").getValue();
-                            if (completeObj instanceof Boolean) {
-                                listing.setComplete((Boolean) completeObj);
-                            } else if (completeObj instanceof String) {
-                                listing.setComplete("true".equalsIgnoreCase((String) completeObj));
-                            }
-                        }
-
-                        // If title is null, try to infer or set default
-                        if (listing.getTitle() == null) {
-                             if (listing.getRequesterName() == null && listing.getDesc() == null) {
-                                 // Likely not a listing object
-                                 displayList.add("Skipping " + postSnapshot.getKey() + ": No title/requester/desc");
-                                 continue;
-                             }
-                             listing.setTitle("Untitled Listing");
-                        }
-                        
-                        listing.setId(postSnapshot.getKey());
-
-                        // Normalize helper name
-                        String helperName = listing.getHelperName();
-                        if (helperName == null) helperName = listing.getHelper();
-                        listing.setHelperName(helperName);
-
-                        // Add ALL listings for debugging, mark status
-                        historyList.add(listing);
-                        String status = listing.isComplete() ? "[DONE]" : "[OPEN]";
-                        String display = status + " " + listing.getTitle();
-                        if (listing.getHelperName() != null) {
-                            display += "\nHelper: " + listing.getHelperName();
-                        }
-                        displayList.add(display);
-                    } else {
-                        displayList.add("Null listing for " + postSnapshot.getKey());
-                    }
+                    // Otherwise try to process as a listing directly
+                    processListingSnapshot(postSnapshot);
                 }
 
                 if (displayList.isEmpty()) {
-                    tvNoHistory.setText("No transactions found.\nScanned " + count + " items.");
+                    tvNoHistory.setText("No transactions found.\nScanned " + count + " root items.");
                     tvNoHistory.setVisibility(View.VISIBLE);
                     lvHistory.setVisibility(View.GONE);
                 } else {
@@ -144,6 +106,60 @@ public class HistoryActivity extends AppCompatActivity {
                 Toast.makeText(HistoryActivity.this, "Failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void processListingSnapshot(DataSnapshot postSnapshot) {
+        Listing listing = null;
+        try {
+            listing = postSnapshot.getValue(Listing.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            displayList.add("Error parsing " + postSnapshot.getKey() + ": " + e.getMessage());
+            return;
+        }
+
+        if (listing != null) {
+            // Manually check 'complete' field
+            if (!listing.isComplete()) {
+                Object completeObj = postSnapshot.child("complete").getValue();
+                if (completeObj instanceof Boolean) {
+                    listing.setComplete((Boolean) completeObj);
+                } else if (completeObj instanceof String) {
+                    listing.setComplete("true".equalsIgnoreCase((String) completeObj));
+                }
+            }
+
+            // If title is null, try to infer or set default
+            if (listing.getTitle() == null) {
+                 if (listing.getRequesterName() == null && listing.getDesc() == null) {
+                     // Likely not a listing object
+                     // Only log if it's not a known container we already handled
+                     if (!"Listings".equals(postSnapshot.getKey()) && !"Postings".equals(postSnapshot.getKey())) {
+                        displayList.add("Skipping " + postSnapshot.getKey() + ": No title/requester/desc");
+                     }
+                     return;
+                 }
+                 listing.setTitle("Untitled Listing");
+            }
+            
+            listing.setId(postSnapshot.getKey());
+
+            // Normalize helper name
+            String helperName = listing.getHelperName();
+            if (helperName == null) helperName = listing.getHelper();
+            listing.setHelperName(helperName);
+
+            // Add ALL listings for debugging, mark status
+            historyList.add(listing);
+            String status = listing.isComplete() ? "[DONE]" : "[OPEN]";
+            String display = status + " " + listing.getTitle();
+            if (listing.getHelperName() != null) {
+                display += "\nHelper: " + listing.getHelperName();
+            }
+            displayList.add(display);
+        } else {
+            displayList.add("Null listing for " + postSnapshot.getKey());
+        }
     }
 
     private void openReviewPage(Listing listing) {
