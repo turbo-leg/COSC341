@@ -149,16 +149,17 @@ public class HistoryActivity extends AppCompatActivity {
             if (helperName == null) helperName = listing.getHelper();
             listing.setHelperName(helperName);
 
-            // Add ALL listings for debugging, mark status
-            historyList.add(listing);
-            String status = listing.isComplete() ? "[DONE]" : "[OPEN]";
-            String display = status + " " + listing.getTitle();
-            if (listing.getHelperName() != null) {
-                display += "\nHelper: " + listing.getHelperName();
+            // Only show completed listings for the history
+            if (listing.isComplete()) {
+                historyList.add(listing);
+                String display = listing.getTitle();
+                if (listing.getHelperName() != null) {
+                    display += "\nHelper: " + listing.getHelperName();
+                } else {
+                    display += "\nHelper: Demo Helper";
+                }
+                displayList.add(display);
             }
-            displayList.add(display);
-        } else {
-            displayList.add("Null listing for " + postSnapshot.getKey());
         }
     }
 
@@ -166,8 +167,8 @@ public class HistoryActivity extends AppCompatActivity {
         // Simple demo: always allow review of the helper
         String helperName = listing.getHelperName();
         if (helperName == null) {
-             Toast.makeText(this, "No helper to review", Toast.LENGTH_SHORT).show();
-             return;
+             // For demo purposes, if no helper is assigned, use a placeholder
+             helperName = "Demo Helper";
         }
         ReviewActivity.start(this, listing.getId(), helperName);
     }
