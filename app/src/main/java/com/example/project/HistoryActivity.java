@@ -8,11 +8,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,12 +61,42 @@ public class HistoryActivity extends AppCompatActivity {
                 Listing selectedListing = historyList.get(position);
                 openReviewPage(selectedListing);
             }
-        });
+        );
         
-        // Setup Navigation Drawer (Basic)
-        androidx.drawerlayout.widget.DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        android.widget.ImageButton hamButton = findViewById(R.id.hamButton);
+        // Setup Navigation Drawer
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ImageButton hamButton = findViewById(R.id.hamButton);
+        NavigationView navView = findViewById(R.id.nav_view);
+
         hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.closeHam) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamNewReq) {
+                    Intent intent = new Intent(HistoryActivity.this, CreateHelpRequestActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamBrowse) {
+                    Intent intent = new Intent(HistoryActivity.this, BrowseHelpRequestsActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamReview) {
+                    // Already here
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamMessage) {
+                    Intent intent = new Intent(HistoryActivity.this, MessagesListActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamStats) {
+                    Intent intent = new Intent(HistoryActivity.this, ViewStatistics.class);
+                    startActivity(intent);
+                }
+                
+                return true;
+            }
+        });
     }
 
     private void fetchHistory() {

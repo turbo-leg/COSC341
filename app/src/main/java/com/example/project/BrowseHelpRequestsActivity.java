@@ -66,15 +66,26 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                if (id == R.id.hamReview) {
+
+                if (id == R.id.closeHam) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamNewReq) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, CreateHelpRequestActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamBrowse) {
+                    // Already here
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamReview) {
                     Intent intent = new Intent(BrowseHelpRequestsActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamMessage) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, MessagesListActivity.class);
                     startActivity(intent);
                 } else if (id == R.id.hamStats) {
                     Intent intent = new Intent(BrowseHelpRequestsActivity.this, ViewStatistics.class);
                     startActivity(intent);
                 }
-                // Add other menu items here as needed
-                drawerLayout.closeDrawer(GravityCompat.START);
+                
                 return true;
             }
         });
