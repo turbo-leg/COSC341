@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -62,7 +63,7 @@ public class HistoryActivity extends AppCompatActivity {
         // Setup Navigation Drawer (Basic)
         androidx.drawerlayout.widget.DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         android.widget.ImageButton hamButton = findViewById(R.id.hamButton);
-        hamButton.setOnClickListener(v -> drawerLayout.open());
+        hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
     }
 
     private void fetchHistory() {

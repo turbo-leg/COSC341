@@ -31,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.text.DecimalFormat;
 public class ViewStatistics extends AppCompatActivity {
     private boolean listingsLoaded = false;
@@ -70,7 +71,7 @@ public class ViewStatistics extends AppCompatActivity {
         navView = findViewById(R.id.nav_view);
 
         // Open drawer on button click
-        hamButton.setOnClickListener(v -> drawerLayout.open());
+        hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         // Use default instance
         root = FirebaseDatabase.getInstance().getReference();
