@@ -21,10 +21,10 @@
             android:name=".LeaderBoardActivity"
             android:exported="false" />
         <activity
-            android:name=".ViewStatistics"
+            android:name=".CreateHelpRequestActivity"
             android:exported="false" />
         <activity
-            android:name=".CreateHelpRequestActivity"
+            android:name=".ViewStatistics"
             android:exported="false" />
         <activity
             android:name=".ReviewActivity"

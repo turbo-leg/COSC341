@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Project</string>
     <string name="testuser">John Doe</string>
-    <string name="stats">Your Statistics:</string>\
-    <string name="seeLeaderboard">View Leaderboard</string>
+    <string name="stats">Your Statistics</string>\
+    <string name="leaderboard">Helper Ranking</string>
     <string name="myStat">My Statistics</string>
     <string name="newListing">Create Listing</string>
     <string name="browseListing">Browse Listings</string>
