@@ -8,7 +8,7 @@ public class Listing {
     String helperName;
     String category;
     String desc;
-    boolean isComplete;
+    boolean complete;
     String startDateTime;
     String helper; // Added to match potential DB field 'helper'
 
@@ -24,7 +24,7 @@ public class Listing {
         this.desc = desc;
         this.startDateTime = startDateTime;
         this.address = address;
-        this.isComplete = false;
+        this.complete = false;
         this.id = null; // This will be set by Firebase when the object is saved
     }
 
