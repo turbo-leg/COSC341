@@ -18,10 +18,19 @@
             android:name=".SendingReceivingMessagesActivity"
             android:exported="true" />
         <activity
+            android:name=".LeaderBoardActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewStatistics"
             android:exported="false" />
         <activity
             android:name=".CreateHelpRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HistoryActivity"
             android:exported="false" />
         <activity
             android:name=".BrowseHelpRequestsActivity"
@@ -32,6 +41,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

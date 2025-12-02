@@ -1,5 +1,23 @@
 <resources>
     <string name="app_name">Project</string>
+    <string name="testuser">John Doe</string>
+    <string name="stats">Your Statistics:</string>\
+    <string name="seeLeaderboard">View Leaderboard</string>
+    <string name="myStat">My Statistics</string>
+    <string name="newListing">Create Listing</string>
+    <string name="browseListing">Browse Listings</string>
+    <string name="viewMessages">Messages</string>
+    <string name="leaveReview">Leave Review</string>
+    <string name="reviewsstat">Review Statistics</string>
+    <string name="numreviews">Amount you have been reviewed:</string>
+    <string name="avgreviewscore">Your average review score:</string>
+    <string name="listingsstat">Listing Statistics:</string>
+    <string name="numneedhelp">Number of times you\'ve needed help:</string>
+    <string name="catneedhelp">Category you need the most help with:</string>
+    <string name="helperstat">Helper Statistics:</string>
+    <string name="numofhelp">Number of times you\'ve helped:</string>
+    <string name="catmosthelped">Category you help with the most:</string>
+    <string name="helperscore">Your Helper Score:</string>
     <string-array name="category_names">
         <item>Gardening</item>
         <item>Car Maintenance</item>
