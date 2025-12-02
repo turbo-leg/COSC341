@@ -62,7 +62,7 @@ public class HistoryActivity extends AppCompatActivity {
                 Listing selectedListing = historyList.get(position);
                 openReviewPage(selectedListing);
             }
-        );
+        });
         
         // Setup Navigation Drawer
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
