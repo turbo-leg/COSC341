@@ -48,7 +48,8 @@ public class HistoryActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayList);
         lvHistory.setAdapter(adapter);
 
-        mDatabase = FirebaseDatabase.getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/").getReference();
+        // Use default instance which reads from google-services.json
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         fetchHistory();
 
@@ -62,13 +63,16 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void fetchHistory() {
-        // Assuming listings are at the root level based on the provided DB structure
+        // Fetch from root
         DatabaseReference postingsRef = mDatabase; 
         postingsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 historyList.clear();
                 displayList.clear();
+
+                long count = snapshot.getChildrenCount();
+                // Toast.makeText(HistoryActivity.this, "Found " + count + " items", Toast.LENGTH_SHORT).show();
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     // Skip the Reviews node
@@ -79,11 +83,12 @@ public class HistoryActivity extends AppCompatActivity {
                         listing = postSnapshot.getValue(Listing.class);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        displayList.add("Error parsing: " + postSnapshot.getKey());
                         continue;
                     }
 
                     if (listing != null) {
-                        // Manually check 'complete' field to handle Boolean or String
+                        // Manually check 'complete' field
                         if (!listing.isComplete()) {
                             Object completeObj = postSnapshot.child("complete").getValue();
                             if (completeObj instanceof Boolean) {
@@ -93,34 +98,36 @@ public class HistoryActivity extends AppCompatActivity {
                             }
                         }
 
-                        // If title is null, it might not be a valid listing, but let's try to use it if it has other fields
+                        // If title is null, try to infer or set default
                         if (listing.getTitle() == null) {
-                             // Try to see if it's a valid object
-                             if (listing.getRequesterName() == null && listing.getDesc() == null) continue;
+                             if (listing.getRequesterName() == null && listing.getDesc() == null) {
+                                 // Likely not a listing object
+                                 continue;
+                             }
                              listing.setTitle("Untitled Listing");
                         }
                         
-                        listing.setId(postSnapshot.getKey()); // Ensure ID is set
+                        listing.setId(postSnapshot.getKey());
 
                         // Normalize helper name
                         String helperName = listing.getHelperName();
                         if (helperName == null) helperName = listing.getHelper();
                         listing.setHelperName(helperName);
 
-                        // Include if the listing is complete
-                        if (listing.isComplete()) {
-                            historyList.add(listing);
-                            String display = listing.getTitle();
-                            if (listing.getHelperName() != null) {
-                                display += "\nHelper: " + listing.getHelperName();
-                            }
-                            displayList.add(display);
+                        // Add ALL listings for debugging, mark status
+                        historyList.add(listing);
+                        String status = listing.isComplete() ? "[DONE]" : "[OPEN]";
+                        String display = status + " " + listing.getTitle();
+                        if (listing.getHelperName() != null) {
+                            display += "\nHelper: " + listing.getHelperName();
                         }
+                        // display += "\nKey: " + postSnapshot.getKey(); // Optional debug info
+                        displayList.add(display);
                     }
                 }
 
                 if (historyList.isEmpty()) {
-                    tvNoHistory.setText("No completed transactions found.\nScanned " + snapshot.getChildrenCount() + " items.");
+                    tvNoHistory.setText("No transactions found.\nScanned " + count + " items.");
                     tvNoHistory.setVisibility(View.VISIBLE);
                     lvHistory.setVisibility(View.GONE);
                 } else {
@@ -132,7 +139,7 @@ public class HistoryActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(HistoryActivity.this, "Failed to load history", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HistoryActivity.this, "Failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
