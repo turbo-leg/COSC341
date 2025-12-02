@@ -67,7 +67,7 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.hamReview) {
-                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, ReviewActivity.class);
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, HistoryActivity.class);
                     startActivity(intent);
                 } else if (id == R.id.hamStats) {
                     Intent intent = new Intent(BrowseHelpRequestsActivity.this, ViewStatistics.class);
