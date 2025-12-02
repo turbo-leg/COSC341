@@ -83,11 +83,13 @@ public class HistoryActivity extends AppCompatActivity {
                     }
 
                     if (listing != null) {
-                        // Manually check 'complete' field if mapping failed or to be sure
+                        // Manually check 'complete' field to handle Boolean or String
                         if (!listing.isComplete()) {
-                            Boolean isCompleteObj = postSnapshot.child("complete").getValue(Boolean.class);
-                            if (isCompleteObj != null && isCompleteObj) {
-                                listing.setComplete(true);
+                            Object completeObj = postSnapshot.child("complete").getValue();
+                            if (completeObj instanceof Boolean) {
+                                listing.setComplete((Boolean) completeObj);
+                            } else if (completeObj instanceof String) {
+                                listing.setComplete("true".equalsIgnoreCase((String) completeObj));
                             }
                         }
 
@@ -118,6 +120,7 @@ public class HistoryActivity extends AppCompatActivity {
                 }
 
                 if (historyList.isEmpty()) {
+                    tvNoHistory.setText("No completed transactions found.\nScanned " + snapshot.getChildrenCount() + " items.");
                     tvNoHistory.setVisibility(View.VISIBLE);
                     lvHistory.setVisibility(View.GONE);
                 } else {
