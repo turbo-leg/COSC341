@@ -27,8 +27,7 @@ public class HistoryActivity extends AppCompatActivity {
     private TextView tvNoHistory;
     private DatabaseReference mDatabase;
     private List<Listing> historyList;
-    private List<String> displayList;
-    private ArrayAdapter<String> adapter;
+    private HistoryAdapter adapter;
 
     // Hardcoded user for now, matching other activities
     private final String CURRENT_USER_NAME = "John Doe";
@@ -44,8 +43,7 @@ public class HistoryActivity extends AppCompatActivity {
         tvNoHistory = findViewById(R.id.tvNoHistory);
 
         historyList = new ArrayList<>();
-        displayList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayList);
+        adapter = new HistoryAdapter(this, historyList);
         lvHistory.setAdapter(adapter);
 
         // Use default instance which reads from google-services.json
@@ -60,6 +58,11 @@ public class HistoryActivity extends AppCompatActivity {
                 openReviewPage(selectedListing);
             }
         });
+        
+        // Setup Navigation Drawer (Basic)
+        androidx.drawerlayout.widget.DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        android.widget.ImageButton hamButton = findViewById(R.id.hamButton);
+        hamButton.setOnClickListener(v -> drawerLayout.open());
     }
 
     private void fetchHistory() {
@@ -69,7 +72,6 @@ public class HistoryActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 historyList.clear();
-                displayList.clear();
 
                 long count = snapshot.getChildrenCount();
 
@@ -90,7 +92,7 @@ public class HistoryActivity extends AppCompatActivity {
                     processListingSnapshot(postSnapshot);
                 }
 
-                if (displayList.isEmpty()) {
+                if (historyList.isEmpty()) {
                     tvNoHistory.setText("No transactions found.\nScanned " + count + " root items.");
                     tvNoHistory.setVisibility(View.VISIBLE);
                     lvHistory.setVisibility(View.GONE);
@@ -114,7 +116,6 @@ public class HistoryActivity extends AppCompatActivity {
             listing = postSnapshot.getValue(Listing.class);
         } catch (Exception e) {
             e.printStackTrace();
-            displayList.add("Error parsing " + postSnapshot.getKey() + ": " + e.getMessage());
             return;
         }
 
@@ -132,11 +133,6 @@ public class HistoryActivity extends AppCompatActivity {
             // If title is null, try to infer or set default
             if (listing.getTitle() == null) {
                  if (listing.getRequesterName() == null && listing.getDesc() == null) {
-                     // Likely not a listing object
-                     // Only log if it's not a known container we already handled
-                     if (!"Listings".equals(postSnapshot.getKey()) && !"Postings".equals(postSnapshot.getKey())) {
-                        displayList.add("Skipping " + postSnapshot.getKey() + ": No title/requester/desc");
-                     }
                      return;
                  }
                  listing.setTitle("Untitled Listing");
@@ -152,13 +148,6 @@ public class HistoryActivity extends AppCompatActivity {
             // Only show completed listings for the history
             if (listing.isComplete()) {
                 historyList.add(listing);
-                String display = listing.getTitle();
-                if (listing.getHelperName() != null) {
-                    display += "\nHelper: " + listing.getHelperName();
-                } else {
-                    display += "\nHelper: Demo Helper";
-                }
-                displayList.add(display);
             }
         }
     }
@@ -171,5 +160,38 @@ public class HistoryActivity extends AppCompatActivity {
              helperName = "Demo Helper";
         }
         ReviewActivity.start(this, listing.getId(), helperName);
+    }
+
+    private class HistoryAdapter extends ArrayAdapter<Listing> {
+        public HistoryAdapter(android.content.Context context, List<Listing> listings) {
+            super(context, 0, listings);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull android.view.ViewGroup parent) {
+            if (convertView == null) {
+                convertView = android.view.LayoutInflater.from(getContext()).inflate(R.layout.single_item, parent, false);
+            }
+
+            Listing listing = getItem(position);
+            if (listing != null) {
+                TextView tvTitle = convertView.findViewById(R.id.textView1);
+                TextView tvUser = convertView.findViewById(R.id.textView2);
+                android.widget.ImageView imageView = convertView.findViewById(R.id.imageView);
+
+                tvTitle.setText(listing.getTitle());
+                
+                String helperName = listing.getHelperName();
+                if (helperName == null) helperName = "Demo Helper";
+                tvUser.setText("Helper: " + helperName);
+                
+                // Set icon based on category if possible, or default
+                // For now, just keep the default or set a generic one
+                // imageView.setImageResource(R.drawable.ic_history); // If we had one
+            }
+
+            return convertView;
+        }
     }
 }
