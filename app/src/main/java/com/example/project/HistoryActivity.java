@@ -78,10 +78,18 @@ public class HistoryActivity extends AppCompatActivity {
                     try {
                         listing = postSnapshot.getValue(Listing.class);
                     } catch (Exception e) {
+                        e.printStackTrace();
                         continue;
                     }
 
-                    if (listing != null && listing.getTitle() != null) {
+                    if (listing != null) {
+                        // If title is null, it might not be a valid listing, but let's try to use it if it has other fields
+                        if (listing.getTitle() == null) {
+                             // Try to see if it's a valid object
+                             if (listing.getRequesterName() == null && listing.getDesc() == null) continue;
+                             listing.setTitle("Untitled Listing");
+                        }
+                        
                         listing.setId(postSnapshot.getKey()); // Ensure ID is set
 
                         // Normalize helper name

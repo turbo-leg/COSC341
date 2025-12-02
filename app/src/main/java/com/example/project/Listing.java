@@ -78,11 +78,11 @@ public class Listing {
     }
 
     public boolean isComplete() {
-        return isComplete;
+        return complete;
     }
 
     public void setComplete(boolean complete) {
-        isComplete = complete;
+        this.complete = complete;
     }
 
     public String getStartDateTime() {
