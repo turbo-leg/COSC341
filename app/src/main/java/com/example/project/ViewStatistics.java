@@ -1,5 +1,6 @@
 package com.example.project;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.media.Image;
 import android.os.Bundle;
@@ -7,7 +8,9 @@ import android.text.SpannableString;
 import android.text.style.TypefaceSpan;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,8 +31,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
+import java.text.DecimalFormat;
 public class ViewStatistics extends AppCompatActivity {
+    private boolean listingsLoaded = false;
+    private boolean reviewsLoaded = false;
     private DatabaseReference root;
     private ImageButton hamButton;
     private DrawerLayout drawerLayout;
@@ -40,8 +45,8 @@ public class ViewStatistics extends AppCompatActivity {
 
     //TODO implement to count people helped when data is in firebase
     //private int peopleHelped = 0;
-    private String mostPopularCategory;
-    private int avgRating;
+    private String catMostNeedHelp;
+    private double avgRating;
     private int[] categoryMostListed = {0,0,0,0,0,0,0};
 
     //TODO implement to count most common help category when data is added to firebase
@@ -62,7 +67,7 @@ public class ViewStatistics extends AppCompatActivity {
         navView = findViewById(R.id.nav_view);
 
         // Open drawer on button click
-        btnHamburger.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+        hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         // Optional: handle menu item clicks
         navView.setNavigationItemSelectedListener(item -> {
@@ -74,7 +79,6 @@ public class ViewStatistics extends AppCompatActivity {
         */
         root = FirebaseDatabase.getInstance().getReference();
         getStatistics();
-
 
     }
     public void getStatistics() { //gathers the statistics for the testuser
@@ -91,6 +95,8 @@ public class ViewStatistics extends AppCompatActivity {
                         listingsCreated++;
                     }
                 }
+                listingsLoaded = true;
+                if (reviewsLoaded) updateUI();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -111,12 +117,29 @@ public class ViewStatistics extends AppCompatActivity {
                         totalRating += rating;
                     }
                 }
+                reviewsLoaded = true;
+                if (listingsLoaded) updateUI();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ViewStatistics.this, "No Data to Read", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void updateUI() {
+        ((TextView)findViewById(R.id.numOfList2)).setText(Integer.toString(listingsCreated));
+        String mostCommonCat = findHighestCat(categoryMostListed);
+        ((TextView)findViewById(R.id.catneedhelp2)).setText(mostCommonCat);
+        ((TextView)findViewById(R.id.numOfReview2)).setText(Integer.toString(numberOfReviews));
+        if (numberOfReviews == 0){
+            ((TextView) findViewById(R.id.avgReview2)).setText("N/A");
+        }else {
+            avgRating = totalRating / (numberOfReviews + 0.0);
+            DecimalFormat format = new DecimalFormat("#.##");
+            String str = format.format(avgRating);
+            ((TextView) findViewById(R.id.avgReview2)).setText(str);
+        }
+
     }
     public void incrementCategory (String cat){
         switch (cat){
@@ -128,5 +151,47 @@ public class ViewStatistics extends AppCompatActivity {
             case "Moving": categoryMostListed[5]++; break;
             case "Miscellaneous": categoryMostListed[6]++; break;
         }
+    }
+    public String findHighestCat(int [] cat){
+        int max = 0;
+        int maxidx = -1;
+        for (int i = 0; i<7;i++){
+            if (cat[i] > max) {
+                max = cat[i];
+                maxidx = i;
+            }
+        }
+        String highestCat = "";
+        switch (maxidx) {
+            case -1:
+                highestCat = "N/A";
+                break;
+            case 0:
+                highestCat = "Gardening";
+                break;
+            case 1:
+                highestCat = "Car Maintenance";
+                break;
+            case 2:
+                highestCat = "Babysitting";
+                break;
+            case 3:
+                highestCat = "Cooking";
+                break;
+            case 4:
+                highestCat = "Pet Care";
+                break;
+            case 5:
+                highestCat = "Moving";
+                break;
+            case 6:
+                highestCat = "Miscellaneous";
+                break;
+        }
+        return highestCat;
+    }
+    public void sendLeaderboard(View view){
+        Intent intent = new Intent(ViewStatistics.this,LeaderBoardActivity.class);
+        startActivity(intent);
     }
 }

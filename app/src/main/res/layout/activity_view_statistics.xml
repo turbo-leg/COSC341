@@ -35,6 +35,150 @@
     </androidx.drawerlayout.widget.DrawerLayout>
     -->
 
+    <TextView
+        android:id="@+id/catYouHelp"
+        android:layout_width="163dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/catmosthelped"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/numOfHelp"
+        app:layout_constraintTop_toBottomOf="@+id/numOfHelp" />
+
+    <TextView
+        android:id="@+id/numOfHelp2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/numOfReview"
+        app:layout_constraintTop_toTopOf="@+id/numOfHelp" />
+
+    <TextView
+        android:id="@+id/catYouHelp2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/numOfReview2"
+        app:layout_constraintTop_toTopOf="@+id/catYouHelp" />
+
+    <TextView
+        android:id="@+id/numOfHelp"
+        android:layout_width="163dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/numofhelp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/viewListingStat"
+        app:layout_constraintTop_toBottomOf="@+id/viewHelperStat" />
+
+    <TextView
+        android:id="@+id/avgReview"
+        android:layout_width="163dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/avgreviewscore"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/numOfReview"
+        app:layout_constraintTop_toBottomOf="@+id/numOfReview" />
+
+    <TextView
+        android:id="@+id/numOfReview2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/numOfReview"
+        app:layout_constraintTop_toTopOf="@+id/numOfReview" />
+
+    <TextView
+        android:id="@+id/numOfReview"
+        android:layout_width="163dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/numreviews"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/viewListingStat"
+        app:layout_constraintTop_toBottomOf="@+id/viewReviewStat" />
+
+    <TextView
+        android:id="@+id/avgReview2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/numOfReview2"
+        app:layout_constraintTop_toTopOf="@+id/avgReview" />
+
+    <TextView
+        android:id="@+id/catneedhelp"
+        android:layout_width="163dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/catneedhelp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/viewListingStat"
+        app:layout_constraintTop_toBottomOf="@+id/numOfList" />
+
+    <TextView
+        android:id="@+id/catneedhelp2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/numOfList"
+        app:layout_constraintTop_toBottomOf="@+id/numOfList2" />
+
+    <TextView
+        android:id="@+id/numOfList2"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/numOfList"
+        app:layout_constraintTop_toBottomOf="@+id/viewListingStat" />
+
+    <TextView
+        android:id="@+id/viewHelperStat"
+        android:layout_width="274dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="160dp"
+        android:fontFamily="@font/lato"
+        android:text="@string/helperstat"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewReviewStat" />
+
+    <TextView
+        android:id="@+id/viewReviewStat"
+        android:layout_width="274dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="160dp"
+        android:fontFamily="@font/lato"
+        android:text="@string/reviewsstat"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewListingStat" />
+
     <ImageButton
         android:id="@+id/hamButton"
         android:layout_width="69dp"
@@ -78,8 +222,33 @@
         android:layout_height="55dp"
         android:layout_marginStart="16dp"
         android:background="@color/white"
+        android:onClick="snedLeaderboard"
         app:layout_constraintBottom_toBottomOf="@+id/scoreUser"
         app:layout_constraintStart_toEndOf="@+id/scoreUser"
         app:srcCompat="@drawable/outline_bar_chart_24" />
+
+    <TextView
+        android:id="@+id/viewListingStat"
+        android:layout_width="274dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/lato"
+        android:text="@string/listingsstat"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/line" />
+
+    <TextView
+        android:id="@+id/numOfList"
+        android:layout_width="163dp"
+        android:layout_height="50dp"
+        android:text="@string/numneedhelp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/viewListingStat"
+        app:layout_constraintTop_toBottomOf="@+id/viewListingStat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
