@@ -53,6 +53,8 @@ public class ViewStatistics extends AppCompatActivity {
     //private int[] categoryMostHelped = {0,0,0,0,0,0,0};
 
     private final String user = "John Doe";
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -62,70 +64,99 @@ public class ViewStatistics extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-       /* drawerLayout = findViewById(R.id.drawer_layout);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
         hamButton = findViewById(R.id.hamButton);
         navView = findViewById(R.id.nav_view);
 
         // Open drawer on button click
-        hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+        hamButton.setOnClickListener(v -> drawerLayout.open());
 
-        // Optional: handle menu item clicks
-        navView.setNavigationItemSelectedListener(item -> {
-            // Handle clicks here
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        });
-
-        */
+        // Use default instance
         root = FirebaseDatabase.getInstance().getReference();
         getStatistics();
-
     }
-    public void getStatistics() { //gathers the statistics for the testuser
-        root.child("Listings").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(@NonNull DataSnapshot listingsSnapshot) {
-                for (DataSnapshot listing : listingsSnapshot.getChildren()) {
-                    String requesterName = listing.child("requesterName").getValue(String.class);
-                    String category = listing.child("category").getValue(String.class);
-                    if (category != null)
-                        incrementCategory(category);
 
-                    //increments if listing was created by user
-                    if (requesterName != null && requesterName.equals(user)) {
-                        listingsCreated++;
+    public void openLeaderboard(View view) {
+        Intent intent = new Intent(this, LeaderBoardActivity.class);
+        startActivity(intent);
+    }
+
+    public void getStatistics() { //gathers the statistics for the testuser
+        // Fetch from root to handle different structures
+        root.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listingsCreated = 0;
+                categoryMostListed = new int[]{0,0,0,0,0,0,0}; // Reset counts
+
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    String key = postSnapshot.getKey();
+                    if ("Reviews".equals(key)) continue;
+
+                    if ("Listings".equals(key) || "Postings".equals(key)) {
+                        for (DataSnapshot innerSnapshot : postSnapshot.getChildren()) {
+                            processListing(innerSnapshot);
+                        }
+                        continue;
                     }
+                    processListing(postSnapshot);
                 }
                 listingsLoaded = true;
                 if (reviewsLoaded) updateUI();
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ViewStatistics.this, "No Data to Read", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewStatistics.this, "Failed to load listings", Toast.LENGTH_SHORT).show();
             }
         });
 
         root.child("Reviews").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
             public void onDataChange(@NonNull DataSnapshot reviewsSnapshot) {
+                numberOfReviews = 0;
+                totalRating = 0;
                 for (DataSnapshot review : reviewsSnapshot.getChildren()) {
+                    // Check if review is for this user (as helper)
+                    // The Review class has 'helper' field which is the name
                     String helperName = review.child("helper").getValue(String.class);
-                    Integer rating = review.child("rating").getValue(Integer.class);
-
-                    //increments if review was abt user
-                    if (helperName != null && helperName.equals(user) && rating != null) {
+                    
+                    if (user.equals(helperName)) {
                         numberOfReviews++;
-                        totalRating += rating;
+                        // Handle both Double and Integer for rating
+                        Object ratingObj = review.child("rating").getValue();
+                        if (ratingObj instanceof Double) {
+                            totalRating += (Double) ratingObj;
+                        } else if (ratingObj instanceof Long) {
+                            totalRating += (Long) ratingObj;
+                        } else if (ratingObj instanceof Integer) {
+                            totalRating += (Integer) ratingObj;
+                        }
                     }
                 }
                 reviewsLoaded = true;
                 if (listingsLoaded) updateUI();
             }
-            @Override
+
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ViewStatistics.this, "No Data to Read", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewStatistics.this, "Failed to load reviews", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    private void processListing(DataSnapshot listingSnapshot) {
+        String requesterName = listingSnapshot.child("requesterName").getValue(String.class);
+        String category = listingSnapshot.child("category").getValue(String.class);
+        
+        if (category != null)
+            incrementCategory(category);
+
+        //increments if listing was created by user
+        if (requesterName != null && requesterName.equals(user)) {
+            listingsCreated++;
+        }
+    }
+
     private void updateUI() {
         ((TextView)findViewById(R.id.numOfList2)).setText(Integer.toString(listingsCreated));
         String mostCommonCat = findHighestCat(categoryMostListed);
@@ -134,7 +165,7 @@ public class ViewStatistics extends AppCompatActivity {
         if (numberOfReviews == 0){
             ((TextView) findViewById(R.id.avgReview2)).setText("N/A");
         }else {
-            avgRating = totalRating / (numberOfReviews + 0.0);
+            avgRating = (double) totalRating / numberOfReviews;
             DecimalFormat format = new DecimalFormat("#.##");
             String str = format.format(avgRating);
             ((TextView) findViewById(R.id.avgReview2)).setText(str);
@@ -189,9 +220,5 @@ public class ViewStatistics extends AppCompatActivity {
                 break;
         }
         return highestCat;
-    }
-    public void sendLeaderboard(View view){
-        Intent intent = new Intent(ViewStatistics.this,LeaderBoardActivity.class);
-        startActivity(intent);
     }
 }
