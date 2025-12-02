@@ -31,6 +31,23 @@
         <item>Sort By</item>
         <item>Category</item>
         <item>Date Added</item>
-        <item>Requester Rating</item>
+    </string-array>
+    <string-array name="times">
+        <item>1:00</item>
+        <item>2:00</item>
+        <item>3:00</item>
+        <item>4:00</item>
+        <item>5:00</item>
+        <item>6:00</item>
+        <item>7:00</item>
+        <item>8:00</item>
+        <item>9:00</item>
+        <item>10:00</item>
+        <item>11:00</item>
+        <item>12:00</item>
+    </string-array>
+    <string-array name="meridiem">
+        <item>AM</item>
+        <item>PM</item>
     </string-array>
 </resources>
