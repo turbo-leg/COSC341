@@ -46,7 +46,6 @@ public class ViewStatistics extends AppCompatActivity {
     //TODO implement to count people helped when data is in firebase
     //private int peopleHelped = 0;
     private String catMostNeedHelp;
-    private double avgRating;
     private int[] categoryMostListed = {0,0,0,0,0,0,0};
 
     //TODO implement to count most common help category when data is added to firebase
@@ -57,26 +56,27 @@ public class ViewStatistics extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_statistics);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawer_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-       /* drawerLayout = findViewById(R.id.drawer_layout);
-        hamButton = findViewById(R.id.hamButton);
-        navView = findViewById(R.id.nav_view);
+       drawerLayout = findViewById(R.id.drawer_layout);
+       hamButton = findViewById(R.id.hamButton);
+       navView = findViewById(R.id.nav_view);
 
         // Open drawer on button click
         hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         // Optional: handle menu item clicks
         navView.setNavigationItemSelectedListener(item -> {
-            // Handle clicks here
+            int id = item.getItemId(); // Get the clicked item's ID
+            sendToChoice(id);
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
 
-        */
+
         root = FirebaseDatabase.getInstance().getReference();
         getStatistics();
 
@@ -134,7 +134,7 @@ public class ViewStatistics extends AppCompatActivity {
         if (numberOfReviews == 0){
             ((TextView) findViewById(R.id.avgReview2)).setText("N/A");
         }else {
-            avgRating = totalRating / (numberOfReviews + 0.0);
+            double avgRating = totalRating / (numberOfReviews + 0.0);
             DecimalFormat format = new DecimalFormat("#.##");
             String str = format.format(avgRating);
             ((TextView) findViewById(R.id.avgReview2)).setText(str);
@@ -193,5 +193,20 @@ public class ViewStatistics extends AppCompatActivity {
     public void sendLeaderboard(View view){
         Intent intent = new Intent(ViewStatistics.this,LeaderBoardActivity.class);
         startActivity(intent);
+    }
+    public void sendToChoice(int id){
+        if (id == R.id.closeHam) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.hamNewReq) {
+            startActivity(new Intent(this, CreateHelpRequestActivity.class));
+        } else if (id == R.id.hamBrowse) {
+            startActivity(new Intent(this, BrowseHelpRequestsActivity.class));
+        } else /*if (id == R.id.hamReview) {
+            startActivity(new Intent(this, LeaveReviewActivity.class));
+        } else if (id == R.id.hamMessage) {
+            startActivity(new Intent(this, MessagesListActivity.class));
+        } else*/ if (id == R.id.hamStats) {
+            startActivity(new Intent(this, ViewStatistics.class));
+        }
     }
 }
