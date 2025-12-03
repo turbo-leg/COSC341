@@ -30,7 +30,7 @@
     <string-array name="sort_options">
         <item>Sort By</item>
         <item>Category</item>
-        <item>Date Added</item>
+        <item>Start Date</item>
     </string-array>
     <string-array name="times">
         <item>1:00</item>

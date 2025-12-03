@@ -61,17 +61,24 @@ public class ListingAdapter extends ArrayAdapter<String> {
         holder.itemImage.setImageResource(images[category]);
         holder.postingTitle.setText(l.getTitle());
         holder.postingUser.setText(l.getRequesterName());
-//        singleItem.setOnClickListener(v -> {
-//            if (clickListener != null) {
-//                // Call the method implemented in BrowseHelpRequestsActivity
-//                clickListener.onListingClick(l, position);
-//            }
-//        });
+        String rating = "";
+        int theRating = hashCharToRange1to5(l.getRequesterName().charAt(0));
+        for(int i = 0; i < theRating; i++)
+            rating+="★";
+        for(int i = 0; i < 5 - theRating; i++)
+            rating+="☆";
+        holder.rating.setText(rating);
         return singleItem;
     }
     @Override
     public int getCount() {
         // This is correct IF 'listings' is the variable you updated in setListings()
         return listings.size();
+    }
+    public static int hashCharToRange1to5(char c) {
+        int hashCode = (int) c;
+        hashCode = (hashCode * 31) ^ hashCode;
+        int range0to4 = Math.abs(hashCode % 5);
+        return range0to4 + 1;
     }
 }
