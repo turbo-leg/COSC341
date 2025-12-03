@@ -57,7 +57,7 @@ public class LeaderBoardActivity extends AppCompatActivity {
                             String helperName = reviewData.child("helper").getValue(String.class);
                             Integer rating = reviewData.child("rating").getValue(Integer.class);
 
-                            if (rating != null)
+                            if (rating != null && helperName != null)
                                 switch (rating){
                                     case 1: helperScores.put(helperName, helperScores.get(helperName)-30); break;
                                     case 2: helperScores.put(helperName, helperScores.get(helperName)-10); break;
@@ -66,24 +66,24 @@ public class LeaderBoardActivity extends AppCompatActivity {
                                     case 5: helperScores.put(helperName, helperScores.get(helperName)+50);break;
                                 }
                         }
-                        /*root.child("Listings").addListenerForSingleValueEvent(new ValueEventListener() {
+                        root.child("Listings").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot listingSnapshot) {
                                 for (DataSnapshot listingData: listingSnapshot.getChildren()) {
                                     String helperNameListing = listingData.child("helper").getValue(String.class);
-                                    Boolean complete = listingData.child("rating").getValue(Boolean.class);
+                                    Boolean complete = listingData.child("complete").getValue(Boolean.class);
 
                                     if (complete && helperNameListing != null)
                                         helperScores.put(helperNameListing, helperScores.get(helperNameListing)+30);
                                 }
+                                buildLeaderboard();
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
                                 Toast.makeText(LeaderBoardActivity.this, "No Data to Read", Toast.LENGTH_SHORT).show();
                             }
-                        });*/
-                        buildLeaderboard();
+                        });
                     }
 
                     @Override
