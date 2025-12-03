@@ -1,13 +1,24 @@
 package com.example.project;
 
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -15,12 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
-import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,8 +40,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class BrowseHelpRequestsActivity extends AppCompatActivity{
@@ -51,15 +61,13 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
 
     LocalDateTime maxStartDateTime;
     Spinner sortSpin;
+    SearchView sv;
 
 
     ListingAdapter listingAdapter;
+    String searchedText;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm");
-
-    private DrawerLayout drawerLayout;
-    private NavigationView navView;
-    private ImageButton hamButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,49 +79,75 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        minStartDateTime = MIN_DATE_TIME;
+        maxStartDateTime = MAX_DATE_TIME;
+        filters = getResources().getStringArray(R.array.sort_options);
+        selectedCategories = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.category_names)));
+        listingRef = FirebaseDatabase.getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/").getReference("Listings");
 
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navView = findViewById(R.id.nav_view);
-        hamButton = findViewById(R.id.hamButton);
-
-        hamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
-
-        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.hamReview) {
-                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, HistoryActivity.class);
-                    startActivity(intent);
-                } else if (id == R.id.hamStats) {
-                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, ViewStatistics.class);
-                    startActivity(intent);
-                }
-                // Add other menu items here as needed
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            }
-        });
-
-        root = FirebaseDatabase.getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/").getReference();
-        intializeList();
+//        Listing l1 = new Listing(
+//                "Catering for Small Family Gathering",
+//                "John Doe",
+//                "Cooking",
+//                "Need some help assembling charcuterie boards for a small family gathering.",
+//                "12/12/2025 09:00",
+//                "1234 Button Road");
+//        listingRef.child("l1").setValue(l1);
+//        Listing l2 = new Listing(
+//                "Help Weeding Garden",
+//                "John Doe",
+//                "Gardening",
+//                "Need some help weeding my garden.",
+//                "31/12/2025 11:00",
+//                "1234 Button Road");
+//        listingRef.child("l2").setValue(l2);
+//        Listing l3 = new Listing(
+//                "Help Moving Couch",
+//                "Rose Gale",
+//                "Moving",
+//                "Giving away my couch to a family member and need help getting it to them.",
+//                "09/12/2025 09:00",
+//                "5678 Button Road");
+//        listingRef.child("l3").setValue(l3);
+//        Listing l4 = new Listing(
+//                "Babysitting for Wednesday",
+//                "Jim Rolland",
+//                "Babysitting",
+//                "Need someone to babysit my 2 kids while I'm out for dinner Wednesday night.",
+//                "03/12/2025 16:00",
+//                "2222 Button Road");
+//        listingRef.child("l4").setValue(l4);
+//        Listing l5 = new Listing(
+//                "Dog Walking for One Hour",
+//                "Cathy Franks",
+//                "Pet Care",
+//                "My dog needs its daily walk and I will not be home to do it.",
+//                "07/12/2025 11:00",
+//                "1111 Button Road");
+//        listingRef.child("l5").setValue(l5);
+        searchedText = "";
         lvCategory = findViewById(R.id.listView);
         sortSpin = findViewById(R.id.spinner);
+        sv = findViewById(R.id.searchView);
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchedText = newText;
+                filterThroughListings();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+        });
+
         Log.e("COSC341", "Before intializeList()");
         intializeList();
         setupSortListener();
-        lvCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Listing l = filteredListings.get(position);
-                Toast.makeText(BrowseHelpRequestsActivity.this, l.getTitle().toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        setupListListener();
+
         Log.e("COSC341", "After intializeList()");
     }
 
@@ -139,12 +173,13 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
         listingRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                allListings.clear();
                 if (dataSnapshot.exists()) {
 
                     for(DataSnapshot listingSnapshot : dataSnapshot.getChildren()){
                         Listing listing = listingSnapshot.getValue(Listing.class);
                         if(listing != null)
-                            if (listing.helperName == null || !listing.isComplete())
+                            if (listing.helperName == null && !listing.isComplete())
                                 allListings.add(listing);
                     }
                 }
@@ -161,12 +196,103 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
         });
 
     }
+    public void setupListListener(){
+        lvCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Listing l = filteredListings.get(position);
+                String rating = "";
+                int theRating = hashCharToRange1to5(l.getRequesterName().charAt(0));
+                for (int i = 0; i < theRating; i++)
+                    rating += "★";
+                for (int i = 0; i < 5 - theRating; i++)
+                    rating += "☆";
+                Dialog dialog = new Dialog(BrowseHelpRequestsActivity.this);
+                dialog.setContentView(R.layout.accept_request_dialog_layout);
+                dialog.show();
+                TextView titleText = dialog.findViewById(R.id.titleTV);
+                TextView requesterText = dialog.findViewById(R.id.requesterTV);
+                TextView ratingText = dialog.findViewById(R.id.ratingTV);
+                TextView catText = dialog.findViewById(R.id.catTV);
+                TextView timeText = dialog.findViewById(R.id.timeTV);
+                TextView descText = dialog.findViewById(R.id.descTV);
+                TextView addressText = dialog.findViewById(R.id.addressTV);
+
+                titleText.setText(l.getTitle());
+                requesterText.setText(l.getRequesterName());
+                ratingText.setText(rating);
+                catText.append(l.getCategory());
+                timeText.append(l.getStartDateTime());
+                descText.append(l.getDesc());
+                addressText.append(l.getAddress());
+
+                ImageView iv = dialog.findViewById(R.id.imageView6);
+                iv.setImageResource(R.drawable.user);
+
+                Button accept = dialog.findViewById(R.id.acceptBtn);
+                Button back = dialog.findViewById(R.id.backBtn);
+
+                accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(BrowseHelpRequestsActivity.this);
+                        builder.setCancelable(true);
+                        builder.setTitle("Are You Sure?");
+                        builder.setMessage("Do you want to accept this listing?");
+                        builder.setPositiveButton("YES",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface alertDialog, int which) {
+                                        alertDialog.dismiss();
+                                        listingRef.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if (snapshot.exists()) {
+                                                    for(DataSnapshot listingSnapshot : snapshot.getChildren()){
+                                                        Listing listing = listingSnapshot.getValue(Listing.class);
+                                                        String key = listingSnapshot.getKey();
+                                                        if(listing != null)
+                                                            if (listing.getTitle().equals(l.getTitle())) {
+                                                                l.setHelperName("Me");
+                                                                listingRef.child(key).setValue(l);
+                                                            }
+                                                    }
+                                                }
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
+                                        dialog.dismiss();
+                                    }
+                                });
+                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface alertDialog, int which) {
+                                alertDialog.dismiss();
+                            }
+                        });
+
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                    }
+                });
+                back.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+    }
     public void filterPopup(String selectedFilter){
         switch(selectedFilter){
             case "Category":
                 categoryPopup();
                 break;
-            case "Date Added":
+            case "Start Date":
                 datePopup();
                 break;
             default:
@@ -263,15 +389,24 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
         Spinner spinMaxTime = dialog.findViewById(R.id.timeSpin2);
         Spinner spinMaxMerid = dialog.findViewById(R.id.timeSpin3);
 
+
         if(!minStartDateTime.isEqual(MIN_DATE_TIME)){
-            etMinDate.setText(minStartDateTime.getDayOfMonth()
-                    + "/" + minStartDateTime.getMonthValue()
-                    + "/" + minStartDateTime.getYear());
+            String minDay = String.valueOf(minStartDateTime.getDayOfMonth());
+            String minMonth = String.valueOf(minStartDateTime.getMonthValue());
+            if(minDay.length() == 1)
+                minDay = "0" + minDay;
+            if(minMonth.length() == 1)
+                minMonth = "0" + minMonth;
+            etMinDate.setText(minDay+"/"+minMonth+"/"+minStartDateTime.getYear());
         }
         if(!maxStartDateTime.isEqual(MAX_DATE_TIME)) {
-            etMaxDate.setText(maxStartDateTime.getDayOfMonth()
-                    + "/" + maxStartDateTime.getMonthValue()
-                    + "/" + maxStartDateTime.getYear());
+            String maxDay = String.valueOf(maxStartDateTime.getDayOfMonth());
+            String maxMonth = String.valueOf(maxStartDateTime.getMonthValue());
+            if(maxDay.length() == 1)
+                maxDay = "0" + maxDay;
+            if(maxMonth.length() == 1)
+                maxMonth = "0" + maxMonth;
+            etMaxDate.setText(maxDay+"/"+maxMonth+"/"+maxStartDateTime.getYear());
         }
         etMinDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -283,6 +418,23 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 openDateDialog(etMaxDate);
+            }
+        });
+
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                minStartDateTime = MIN_DATE_TIME;
+                maxStartDateTime = MAX_DATE_TIME;
+                dialog.dismiss();
+                filterThroughListings();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
             }
         });
 
@@ -363,7 +515,8 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
             Listing l = iter.next();
             if(selectedCategories.contains(l.getCategory())
                     && minStartDateTime.isBefore(LocalDateTime.parse(l.getStartDateTime(), FORMATTER))
-                    && maxStartDateTime.isAfter(LocalDateTime.parse(l.getStartDateTime(), FORMATTER)) ){
+                    && maxStartDateTime.isAfter(LocalDateTime.parse(l.getStartDateTime(), FORMATTER))
+                    && (l.getTitle().toLowerCase().contains(searchedText.toLowerCase()) || l.getRequesterName().toLowerCase().contains(searchedText.toLowerCase()))){
                 filteredListings.add(l);
             }
         }
@@ -388,5 +541,12 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
         }, currentYear,currentMonth,currentDay);
 
         theDialog.show();
+    }
+
+    public static int hashCharToRange1to5(char c) {
+        int hashCode = (int) c;
+        hashCode = (hashCode * 31) ^ hashCode;
+        int range0to4 = Math.abs(hashCode % 5);
+        return range0to4 + 1;
     }
 }
