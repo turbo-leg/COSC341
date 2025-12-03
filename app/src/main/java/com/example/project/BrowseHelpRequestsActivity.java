@@ -1,7 +1,9 @@
 package com.example.project;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -233,27 +235,47 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
                 accept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listingRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    for(DataSnapshot listingSnapshot : snapshot.getChildren()){
-                                        Listing listing = listingSnapshot.getValue(Listing.class);
-                                        String key = listingSnapshot.getKey();
-                                        if(listing != null)
-                                            if (listing.getTitle().equals(l.getTitle())) {
-                                                l.setHelperName("Me");
-                                                listingRef.child(key).setValue(l);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(BrowseHelpRequestsActivity.this);
+                        builder.setCancelable(true);
+                        builder.setTitle("Are You Sure?");
+                        builder.setMessage("Do you want to accept this listing?");
+                        builder.setPositiveButton("YES",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface alertDialog, int which) {
+                                        alertDialog.dismiss();
+                                        listingRef.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if (snapshot.exists()) {
+                                                    for(DataSnapshot listingSnapshot : snapshot.getChildren()){
+                                                        Listing listing = listingSnapshot.getValue(Listing.class);
+                                                        String key = listingSnapshot.getKey();
+                                                        if(listing != null)
+                                                            if (listing.getTitle().equals(l.getTitle())) {
+                                                                l.setHelperName("Me");
+                                                                listingRef.child(key).setValue(l);
+                                                            }
+                                                    }
+                                                }
                                             }
-                                    }
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
 
+                                            }
+                                        });
+                                        dialog.dismiss();
+                                    }
+                                });
+                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface alertDialog, int which) {
+                                alertDialog.dismiss();
                             }
                         });
-                        dialog.dismiss();
+
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
                     }
                 });
                 back.setOnClickListener(new View.OnClickListener() {
