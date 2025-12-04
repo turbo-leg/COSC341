@@ -21,7 +21,7 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
     private TextInputEditText etRequestTitle, etAddress, etTime, etDescription;
     private AutoCompleteTextView actvCategory;
     private Button btnCreateRequest;
-
+    private static final String CURRENT_USER_NAME = "John Doe";
     private DatabaseReference databaseReference;
 
     @Override
@@ -29,8 +29,10 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_help_request);
 
-        // Initialize Firebase Database reference under a "listings" node
-        databaseReference = FirebaseDatabase.getInstance().getReference("listings");
+        // Initialize Firebase Database reference under a "Listings" node
+        databaseReference = FirebaseDatabase
+                .getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/")
+                .getReference("Listings");
 
         // Initialize UI components
         etRequestTitle = findViewById(R.id.etRequestTitle);
@@ -77,8 +79,7 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         String address = etAddress.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
         String startDateTime = etTime.getText().toString().trim();
-        String requesterName = " "; //TODO: Replace with actual user name when User has logic
-
+        String requesterName = CURRENT_USER_NAME; //TODO: Replace with actual user name when User Authentication is implemented.
 
         // Validation
         if (title.isEmpty() || category.isEmpty() || address.isEmpty() || startDateTime.isEmpty() || description.isEmpty()) {
