@@ -20,15 +20,21 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
+import android.view.MenuItem;
+import android.content.Intent;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,6 +73,10 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
     ListingAdapter listingAdapter;
     String searchedText;
 
+    private DrawerLayout drawerLayout;
+    private NavigationView navView;
+    private ImageButton hamButton;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm");
 
     @Override
@@ -79,6 +89,46 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navView = findViewById(R.id.nav_view);
+        hamButton = findViewById(R.id.hamButton);
+
+        hamButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.closeHam) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamNewReq) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, CreateHelpRequestActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamBrowse) {
+                    // Already here
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamReview) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamMessage) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, MessagesListActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamStats) {
+                    Intent intent = new Intent(BrowseHelpRequestsActivity.this, ViewStatistics.class);
+                    startActivity(intent);
+                }
+                
+                return true;
+            }
+        });
+
         minStartDateTime = MIN_DATE_TIME;
         maxStartDateTime = MAX_DATE_TIME;
         filters = getResources().getStringArray(R.array.sort_options);
