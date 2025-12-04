@@ -1,14 +1,22 @@
 package com.example.project;
 
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -48,6 +56,41 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
 
         // Set listener for the create button
         btnCreateRequest.setOnClickListener(v -> createHelpRequest());
+
+        // Setup Navigation Drawer
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ImageButton hamButton = findViewById(R.id.hamButton);
+        NavigationView navView = findViewById(R.id.nav_view);
+
+        hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.closeHam) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamNewReq) {
+                    // Already here
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamBrowse) {
+                    Intent intent = new Intent(CreateHelpRequestActivity.this, BrowseHelpRequestsActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamReview) {
+                    Intent intent = new Intent(CreateHelpRequestActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamMessage) {
+                    Intent intent = new Intent(CreateHelpRequestActivity.this, MessagesListActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamStats) {
+                    Intent intent = new Intent(CreateHelpRequestActivity.this, ViewStatistics.class);
+                    startActivity(intent);
+                }
+
+                return true;
+            }
+        });
     }
 
     private void setupCategoryDropdown() {
