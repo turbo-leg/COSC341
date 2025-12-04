@@ -21,7 +21,7 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
     private TextInputEditText etRequestTitle, etAddress, etTime, etDescription;
     private AutoCompleteTextView actvCategory;
     private Button btnCreateRequest;
-    private final String CURRENT_USER_NAME = "John Doe";
+    private static final String CURRENT_USER_NAME = "John Doe";
     private DatabaseReference databaseReference;
 
     @Override
