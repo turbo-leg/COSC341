@@ -1,127 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/material_dynamic_neutral60"
     tools:context=".CreateHelpRequestActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <!-- Top Bar -->
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnSurface" />
+
+    <TextView
+        android:id="@+id/headerTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:text="Create Help Request"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/backButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/backButton"
+        android:textColor="@android:color/black" /> <!-- ✅ CHANGE 1: Set title text to black -->
 
-        <TextView
-            android:id="@+id/tvCreateRequestTitle"
-            android:layout_width="wrap_content"
+    <!-- Form Fields Container -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/backButton">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create a Help Request"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:padding="24dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilRequestTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:hint="Title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvCreateRequestTitle">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etRequestTitle"
-                android:layout_width="match_parent"
+            <!-- Request Title -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRequestTitle"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Request Title"
+                app:boxBackgroundColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilCategory"
-            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Category"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilRequestTitle">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRequestTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <AutoCompleteTextView
-                android:id="@+id/actvCategory"
-                android:layout_width="match_parent"
+            <!-- Category Dropdown -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCategory"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:hint="Category"
+                app:boxBackgroundColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilRequestTitle">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilAddress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Address"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilCategory">
+                <AutoCompleteTextView
+                    android:id="@+id/actvCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etAddress"
-                android:layout_width="match_parent"
+            <!-- Address -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilAddress"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="textPostalAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:hint="Address or Location"
+                app:boxBackgroundColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilCategory">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilTime"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Time"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilAddress">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPostalAddress"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etTime"
-                android:layout_width="match_parent"
+            <!-- Time and Date -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTime"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="false"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:hint="Date and Time"
+                app:boxBackgroundColor="@android:color/white"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:endIconMode="custom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilAddress">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Short Description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilTime">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:longClickable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etDescription"
-                android:layout_width="match_parent"
+            <!-- Description -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDescription"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="top"
-                android:inputType="textMultiLine"
-                android:lines="4" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="16dp"
+                android:hint="Description"
+                app:boxBackgroundColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilTime">
 
-        <Button
-            android:id="@+id/btnCreateRequest"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Create Request"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilDescription" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:minLines="3"
+                    android:maxLines="6" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            <!-- Create Button -->
+            <Button
+                android:id="@+id/btnCreateRequest"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:paddingVertical="12dp"
+                android:text="Post Help Request"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
