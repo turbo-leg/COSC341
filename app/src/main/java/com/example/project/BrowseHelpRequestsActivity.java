@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -27,10 +28,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,7 +64,7 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
     final LocalDateTime MAX_DATE_TIME = MIN_DATE_TIME.plusMonths(4);
     LocalDateTime minStartDateTime;
 
-
+    private DrawerLayout drawerLayout;
     LocalDateTime maxStartDateTime;
     Spinner sortSpin;
     SearchView sv;
@@ -117,7 +121,7 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
 //                "Jim Rolland",
 //                "Babysitting",
 //                "Need someone to babysit my 2 kids while I'm out for dinner Wednesday night.",
-//                "03/12/2025 16:00",
+//                "23/12/2025 16:00",
 //                "2222 Button Road");
 //        listingRef.child("l4").setValue(l4);
 //        Listing l5 = new Listing(
@@ -160,7 +164,20 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
             }
         });
 
-        Log.e("COSC341", "After intializeList()");
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ImageButton hamButton = findViewById(R.id.hamButton);
+        NavigationView navView = findViewById(R.id.nav_view);
+
+        // Open drawer on button click
+        hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
+        // Optional: handle menu item clicks
+        navView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId(); // Get the clicked item's ID
+            sendToChoice(id);
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
     }
 
     public void setupSortListener(){
@@ -557,5 +574,21 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
         hashCode = (hashCode * 31) ^ hashCode;
         int range0to4 = Math.abs(hashCode % 5);
         return range0to4 + 1;
+    }
+
+    public void sendToChoice(int id){
+        if (id == R.id.closeHam) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.hamNewReq) {
+            startActivity(new Intent(this, CreateHelpRequestActivity.class));
+        } else if (id == R.id.hamBrowse) {
+            startActivity(new Intent(this, BrowseHelpRequestsActivity.class));
+        } else if (id == R.id.hamReview) {
+            startActivity(new Intent(this, ReviewActivity.class));
+        } else if (id == R.id.hamMessage) {
+            startActivity(new Intent(this, MessagesListActivity.class));
+        } else if (id == R.id.hamStats) {
+            startActivity(new Intent(this, ViewStatistics.class));
+        }
     }
 }
