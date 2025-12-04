@@ -29,7 +29,7 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_help_request);
 
-        // Initialize Firebase Database reference under a "listings" node
+        // Initialize Firebase Database reference under a "Listings" node
         databaseReference = FirebaseDatabase
                 .getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/")
                 .getReference("Listings");
