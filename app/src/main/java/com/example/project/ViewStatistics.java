@@ -199,7 +199,7 @@ public class ViewStatistics extends AppCompatActivity {
         if (numberOfReviews == 0){
             ((TextView) findViewById(R.id.avgReview2)).setText("N/A");
         }else {
-            avgRating = (double) totalRating / numberOfReviews;
+            double avgRating = (double) totalRating / numberOfReviews;
             DecimalFormat format = new DecimalFormat("#.##");
             String str = format.format(avgRating);
             ((TextView) findViewById(R.id.avgReview2)).setText(str);

@@ -57,6 +57,7 @@ import java.util.Map;
 public class BrowseHelpRequestsActivity extends AppCompatActivity{
     ListView lvCategory;
     DatabaseReference listingRef;
+    DatabaseReference root;
     ArrayList<Listing> allListings = new ArrayList<>();
     ArrayList<Listing> filteredListings = new ArrayList<>();
     String[] filters;
