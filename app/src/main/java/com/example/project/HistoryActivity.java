@@ -8,10 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,8 +32,7 @@ public class HistoryActivity extends AppCompatActivity {
     private TextView tvNoHistory;
     private DatabaseReference mDatabase;
     private List<Listing> historyList;
-    private List<String> displayList;
-    private ArrayAdapter<String> adapter;
+    private HistoryAdapter adapter;
 
     // Hardcoded user for now, matching other activities
     private final String CURRENT_USER_NAME = "John Doe";
@@ -44,11 +48,11 @@ public class HistoryActivity extends AppCompatActivity {
         tvNoHistory = findViewById(R.id.tvNoHistory);
 
         historyList = new ArrayList<>();
-        displayList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayList);
+        adapter = new HistoryAdapter(this, historyList);
         lvHistory.setAdapter(adapter);
 
-        mDatabase = FirebaseDatabase.getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/").getReference();
+        // Use default instance which reads from google-services.json
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         fetchHistory();
 
@@ -59,44 +63,72 @@ public class HistoryActivity extends AppCompatActivity {
                 openReviewPage(selectedListing);
             }
         });
+
+        // Setup Navigation Drawer
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ImageButton hamButton = findViewById(R.id.hamButton);
+        NavigationView navView = findViewById(R.id.nav_view);
+
+        hamButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.closeHam) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamNewReq) {
+                    Intent intent = new Intent(HistoryActivity.this, CreateHelpRequestActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamBrowse) {
+                    Intent intent = new Intent(HistoryActivity.this, BrowseHelpRequestsActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamReview) {
+                    // Already here
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (id == R.id.hamMessage) {
+                    Intent intent = new Intent(HistoryActivity.this, MessagesListActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.hamStats) {
+                    Intent intent = new Intent(HistoryActivity.this, ViewStatistics.class);
+                    startActivity(intent);
+                }
+
+                return true;
+            }
+        });
     }
 
     private void fetchHistory() {
-        DatabaseReference postingsRef = mDatabase.child("Postings");
+        // Fetch from root
+        DatabaseReference postingsRef = mDatabase;
         postingsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 historyList.clear();
-                displayList.clear();
+
+                long count = snapshot.getChildrenCount();
 
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    Listing listing = postSnapshot.getValue(Listing.class);
-                    if (listing != null) {
-                        listing.setId(postSnapshot.getKey()); // Ensure ID is set
+                    String key = postSnapshot.getKey();
+                    // Skip the Reviews node
+                    if ("Reviews".equals(key)) continue;
 
-                        // Check if completed and user is involved
-                        // Note: Using names for comparison as per existing code patterns, ideally should be IDs
-                        boolean isRequester = CURRENT_USER_NAME.equals(listing.getRequesterName());
-                        boolean isHelper = CURRENT_USER_NAME.equals(listing.getHelperName());
-
-                        // For testing purposes, we might want to show all listings or just completed ones
-                        // listing.isComplete() should be checked.
-                        // For now, I'll include it if the user is involved.
-                        // TODO: Uncomment isComplete check when data is real
-                        // if (listing.isComplete() && (isRequester || isHelper)) {
-
-                        if (isRequester || isHelper) {
-                            historyList.add(listing);
-                            String role = isRequester ? "Requester" : "Helper";
-                            String otherParty = isRequester ? listing.getHelperName() : listing.getRequesterName();
-                            if (otherParty == null) otherParty = "None";
-                            
-                            displayList.add(listing.getTitle() + " (" + role + ")\nWith: " + otherParty);
+                    // Check if this is a container node
+                    if ("Listings".equals(key) || "Postings".equals(key)) {
+                        for (DataSnapshot innerSnapshot : postSnapshot.getChildren()) {
+                            processListingSnapshot(innerSnapshot);
                         }
+                        continue;
                     }
+
+                    // Otherwise try to process as a listing directly
+                    processListingSnapshot(postSnapshot);
                 }
 
                 if (historyList.isEmpty()) {
+                    tvNoHistory.setText("No transactions found.\nScanned " + count + " root items.");
                     tvNoHistory.setVisibility(View.VISIBLE);
                     lvHistory.setVisibility(View.GONE);
                 } else {
@@ -108,31 +140,93 @@ public class HistoryActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(HistoryActivity.this, "Failed to load history", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HistoryActivity.this, "Failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void openReviewPage(Listing listing) {
-        String reviewerId = CURRENT_USER_ID;
-        String revieweeId;
-        String revieweeName;
-
-        if (CURRENT_USER_NAME.equals(listing.getRequesterName())) {
-            // I am the requester, reviewing the helper
-            revieweeName = listing.getHelperName();
-            revieweeId = "user_helper_placeholder"; // We need the helper's ID. Listing might not have it, only name.
-        } else {
-            // I am the helper, reviewing the requester
-            revieweeName = listing.getRequesterName();
-            revieweeId = "user_requester_placeholder";
-        }
-
-        if (revieweeName == null) {
-            Toast.makeText(this, "Cannot review: No other party assigned", Toast.LENGTH_SHORT).show();
+    private void processListingSnapshot(DataSnapshot postSnapshot) {
+        Listing listing = null;
+        try {
+            listing = postSnapshot.getValue(Listing.class);
+        } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
 
-        ReviewActivity.start(this, reviewerId, revieweeId, listing.getId(), revieweeName);
+        if (listing != null) {
+            // Manually check 'complete' field
+            if (!listing.isComplete()) {
+                Object completeObj = postSnapshot.child("complete").getValue();
+                if (completeObj instanceof Boolean) {
+                    listing.setComplete((Boolean) completeObj);
+                } else if (completeObj instanceof String) {
+                    listing.setComplete("true".equalsIgnoreCase((String) completeObj));
+                }
+            }
+
+            // If title is null, try to infer or set default
+            if (listing.getTitle() == null) {
+                if (listing.getRequesterName() == null && listing.getDesc() == null) {
+                    return;
+                }
+                listing.setTitle("Untitled Listing");
+            }
+
+            listing.setId(postSnapshot.getKey());
+
+            // Normalize helper name
+            String helperName = listing.getHelperName();
+            if (helperName == null) helperName = listing.getHelperName();
+            listing.setHelperName(helperName);
+
+            // Only show completed listings for the history
+            if (listing.isComplete()) {
+                historyList.add(listing);
+            }
+        }
+    }
+
+    private void openReviewPage(Listing listing) {
+        // Simple demo: always allow review of the helper
+        String helperName = listing.getHelperName();
+        if (helperName == null) {
+            // For demo purposes, if no helper is assigned, use a placeholder
+            helperName = "Demo Helper";
+        }
+        ReviewActivity.start(this, listing.getId(), helperName);
+    }
+
+    private class HistoryAdapter extends ArrayAdapter<Listing> {
+        public HistoryAdapter(android.content.Context context, List<Listing> listings) {
+            super(context, 0, listings);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull android.view.ViewGroup parent) {
+            if (convertView == null) {
+                convertView = android.view.LayoutInflater.from(getContext()).inflate(R.layout.single_item, parent, false);
+            }
+
+            Listing listing = getItem(position);
+            if (listing != null) {
+                TextView tvTitle = convertView.findViewById(R.id.textView1);
+                TextView tvUser = convertView.findViewById(R.id.textView2);
+                android.widget.ImageView imageView = convertView.findViewById(R.id.imageView);
+
+                tvTitle.setText(listing.getTitle());
+
+                String helperName = listing.getHelperName();
+                if (helperName == null) helperName = "Demo Helper";
+                tvUser.setText("Helper: " + helperName);
+
+                // Set icon based on category if possible, or default
+                // For now, just keep the default or set a generic one
+                // imageView.setImageResource(R.drawable.ic_history); // If we had one
+            }
+
+            return convertView;
+        }
     }
 }

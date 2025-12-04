@@ -223,7 +223,7 @@ public class ViewStatistics extends AppCompatActivity {
         } else if (id == R.id.hamBrowse) {
             startActivity(new Intent(this, BrowseHelpRequestsActivity.class));
         } else if (id == R.id.hamReview) {
-            startActivity(new Intent(this, ReviewActivity.class));
+            startActivity(new Intent(this, HistoryActivity.class));
         } else if (id == R.id.hamMessage) {
             startActivity(new Intent(this, MessagesListActivity.class));
         } else if (id == R.id.hamStats) {

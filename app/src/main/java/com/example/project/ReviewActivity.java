@@ -18,20 +18,15 @@ public class ReviewActivity extends AppCompatActivity {
 
     private TextView tvRevieweeName;
     private RatingBar ratingBar;
-    private TextInputEditText etReviewComment;
     private Button btnSubmitReview;
 
-    private String reviewerId;
-    private String revieweeId;
     private String listingId;
-    private String revieweeName;
+    private String revieweeName; // This is the helper's name
 
     private DatabaseReference mDatabase;
 
-    public static void start(android.content.Context context, String reviewerId, String revieweeId, String listingId, String revieweeName) {
+    public static void start(android.content.Context context, String listingId, String revieweeName) {
         android.content.Intent intent = new android.content.Intent(context, ReviewActivity.class);
-        intent.putExtra("REVIEWER_ID", reviewerId);
-        intent.putExtra("REVIEWEE_ID", revieweeId);
         intent.putExtra("LISTING_ID", listingId);
         intent.putExtra("REVIEWEE_NAME", revieweeName);
         context.startActivity(intent);
@@ -47,8 +42,6 @@ public class ReviewActivity extends AppCompatActivity {
 
         // Get data from Intent
         if (getIntent() != null) {
-            reviewerId = getIntent().getStringExtra("REVIEWER_ID");
-            revieweeId = getIntent().getStringExtra("REVIEWEE_ID");
             listingId = getIntent().getStringExtra("LISTING_ID");
             revieweeName = getIntent().getStringExtra("REVIEWEE_NAME");
         }
@@ -56,7 +49,6 @@ public class ReviewActivity extends AppCompatActivity {
         // Initialize Views
         tvRevieweeName = findViewById(R.id.tvRevieweeName);
         ratingBar = findViewById(R.id.ratingBar);
-        etReviewComment = findViewById(R.id.etReviewComment);
         btnSubmitReview = findViewById(R.id.btnSubmitReview);
 
         if (revieweeName != null) {
@@ -73,25 +65,19 @@ public class ReviewActivity extends AppCompatActivity {
 
     private void submitReview() {
         float rating = ratingBar.getRating();
-        String comment = etReviewComment.getText().toString().trim();
 
         if (rating == 0) {
             Toast.makeText(this, "Please provide a rating", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (TextUtils.isEmpty(comment)) {
-            etReviewComment.setError("Please write a comment");
-            return;
-        }
-
         // Create Review object
-        Review review = new Review(reviewerId, revieweeId, listingId, rating, comment);
+        // helper is revieweeName, listing is listingId
+        Review review = new Review(revieweeName, listingId, rating);
 
         // Save to Firebase
-        DatabaseReference reviewsRef = mDatabase.child("reviews");
+        DatabaseReference reviewsRef = mDatabase.child("Reviews"); // Capitalized as per user snippet
         String reviewId = reviewsRef.push().getKey();
-        review.setReviewId(reviewId);
 
         if (reviewId != null) {
             reviewsRef.child(reviewId).setValue(review)

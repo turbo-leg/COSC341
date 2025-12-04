@@ -51,7 +51,6 @@ public class Listing {
     public void setRequesterName(String requesterName) {
         this.requesterName = requesterName;
     }
-
     public String getHelperName() {
         return helperName;
     }
