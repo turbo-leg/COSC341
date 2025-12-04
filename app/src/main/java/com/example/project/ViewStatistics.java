@@ -38,6 +38,8 @@ public class ViewStatistics extends AppCompatActivity {
     private boolean reviewsLoaded = false;
     private DatabaseReference root;
     private DrawerLayout drawerLayout;
+    private ImageButton hamButton;
+    private NavigationView navView;
     private int listingsCreated = 0;
     private int totalRating = 0;
     private int numberOfReviews = 0;
