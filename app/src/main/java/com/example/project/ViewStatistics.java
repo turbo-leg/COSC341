@@ -37,9 +37,7 @@ public class ViewStatistics extends AppCompatActivity {
     private boolean listingsLoaded = false;
     private boolean reviewsLoaded = false;
     private DatabaseReference root;
-    private ImageButton hamButton;
     private DrawerLayout drawerLayout;
-    private NavigationView navView;
     private int listingsCreated = 0;
     private int totalRating = 0;
     private int numberOfReviews = 0;
@@ -47,7 +45,6 @@ public class ViewStatistics extends AppCompatActivity {
     //TODO implement to count people helped when data is in firebase
     //private int peopleHelped = 0;
     private String catMostNeedHelp;
-    private double avgRating;
     private int[] categoryMostListed = {0,0,0,0,0,0,0};
 
     //TODO implement to count most common help category when data is added to firebase
@@ -60,12 +57,11 @@ public class ViewStatistics extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_view_statistics);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawer_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         drawerLayout = findViewById(R.id.drawer_layout);
         hamButton = findViewById(R.id.hamButton);
         navView = findViewById(R.id.nav_view);
@@ -100,8 +96,6 @@ public class ViewStatistics extends AppCompatActivity {
                 return true;
             }
         });
-
-        // Use default instance
         root = FirebaseDatabase.getInstance().getReference();
         getStatistics();
     }
@@ -249,5 +243,9 @@ public class ViewStatistics extends AppCompatActivity {
                 break;
         }
         return highestCat;
+    }
+    public void sendLeaderboard(View view){
+        Intent intent = new Intent(ViewStatistics.this,LeaderBoardActivity.class);
+        startActivity(intent);
     }
 }
