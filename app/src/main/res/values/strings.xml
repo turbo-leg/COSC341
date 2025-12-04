@@ -7,6 +7,7 @@
     <string name="newListing">Create Listing</string>
     <string name="browseListing">Browse Listings</string>
     <string name="viewMessages">Messages</string>
+    <string name="history">History</string>
     <string name="leaveReview">Leave Review</string>
     <string name="reviewsstat">Review Statistics</string>
     <string name="numreviews">Amount you have been reviewed:</string>
