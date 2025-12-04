@@ -19,6 +19,7 @@
     <string name="numofhelp">Number of times you\'ve helped:</string>
     <string name="catmosthelped">Category you help with the most:</string>
     <string name="helperscore">Your Helper Score:</string>
+    <string name="reviews_title">Reviews</string>
     <string-array name="category_names">
         <item>Gardening</item>
         <item>Car Maintenance</item>
