@@ -45,6 +45,7 @@
         tools:layout_editor_absoluteX="0dp" />
 
     <ListView
+        android:id="@+id/leaderboard"
         android:layout_width="409dp"
         android:layout_height="631dp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -29,7 +29,7 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
     private TextInputEditText etRequestTitle, etAddress, etTime, etDescription;
     private AutoCompleteTextView actvCategory;
     private Button btnCreateRequest;
-
+    private static final String CURRENT_USER_NAME = "John Doe";
     private DatabaseReference databaseReference;
 
     @Override
@@ -37,8 +37,10 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_help_request);
 
-        // Initialize Firebase Database reference under a "listings" node
-        databaseReference = FirebaseDatabase.getInstance().getReference("listings");
+        // Initialize Firebase Database reference under a "Listings" node
+        databaseReference = FirebaseDatabase
+                .getInstance("https://neighborhood-help-exchange-default-rtdb.firebaseio.com/")
+                .getReference("Listings");
 
         // Initialize UI components
         etRequestTitle = findViewById(R.id.etRequestTitle);
@@ -47,14 +49,13 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         etDescription = findViewById(R.id.etDescription);
         actvCategory = findViewById(R.id.actvCategory);
         btnCreateRequest = findViewById(R.id.btnCreateRequest);
-
+        ImageButton backButton = findViewById(R.id.backButton);
         // Setup UI helpers
         setupCategoryDropdown();
         setupTimePicker();
 
         // Set listener for the create button
         btnCreateRequest.setOnClickListener(v -> createHelpRequest());
-
         // Setup Navigation Drawer
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         ImageButton hamButton = findViewById(R.id.hamButton);
@@ -98,21 +99,35 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
     }
 
     private void setupTimePicker() {
-        etTime.setOnClickListener(v -> {
+        // Get the parent layout for the time field
+        com.google.android.material.textfield.TextInputLayout tilTime = findViewById(R.id.tilTime);
+
+        // This is the main listener. Set it on the parent layout.
+        tilTime.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, selectedHour, selectedMinute) -> {
-                // Using a simpler date/time format for this example
-                String date = String.format(Locale.getDefault(), "%d-%02d-%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
-                String time = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
-                etTime.setText(date + " " + time);
-            }, hour, minute, false); // false for 24-hour format
-
-            timePickerDialog.show();
+            // First, show a DatePickerDialog
+            new android.app.DatePickerDialog(this, (dateView, selectedYear, selectedMonth, selectedDay) -> {
+                // After a date is picked, show a TimePickerDialog
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                new TimePickerDialog(this, (timeView, selectedHour, selectedMinute) -> {
+                    // Format and set the final date and time string
+                    String dateTime = String.format(Locale.getDefault(), "%d-%02d-%02d %02d:%02d",
+                            selectedYear, selectedMonth + 1, selectedDay, selectedHour, selectedMinute);
+                    etTime.setText(dateTime);
+                }, hour, minute, true).show(); // true for 24-hour format
+            }, year, month, day).show();
         });
+
+        // Also set a listener on the EditText itself to pass the click to its parent.
+        // This makes the click behavior more reliable.
+        etTime.setOnClickListener(v -> tilTime.performClick());
     }
+
 
     private void createHelpRequest() {
         String title = etRequestTitle.getText().toString().trim();
@@ -120,8 +135,7 @@ public class CreateHelpRequestActivity extends AppCompatActivity {
         String address = etAddress.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
         String startDateTime = etTime.getText().toString().trim();
-        String requesterName = " "; //TODO: Replace with actual user name when User has logic
-
+        String requesterName = CURRENT_USER_NAME; //TODO: Replace with actual user name when User Authentication is implemented.
 
         // Validation
         if (title.isEmpty() || category.isEmpty() || address.isEmpty() || startDateTime.isEmpty() || description.isEmpty()) {

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class ListingAdapter extends ArrayAdapter<String> {
     Context context;
-    int[] images = {R.drawable.gardening, R.drawable.carmaintenance, R.drawable.babysitting, R.drawable.cooking,R.drawable.petcare,R.drawable.moving};;
+    int[] images = {R.drawable.gardening, R.drawable.carmaintenance, R.drawable.babysitting, R.drawable.cooking,R.drawable.petcare,R.drawable.moving,R.drawable.miscellaneous};;
     ArrayList<Listing> listings;
 
     public ListingAdapter(Context context, ArrayList<Listing> listings) {
@@ -56,6 +56,9 @@ public class ListingAdapter extends ArrayAdapter<String> {
                 break;
             case("Moving"):
                 category = 5;
+                break;
+            case("Miscellaneous"):
+                category = 6;
                 break;
         }
         holder.itemImage.setImageResource(images[category]);
