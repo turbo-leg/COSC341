@@ -273,22 +273,4 @@ public class ViewStatistics extends AppCompatActivity {
         Intent intent = new Intent(ViewStatistics.this,LeaderBoardActivity.class);
         startActivity(intent);
     }
-<<<<<<< HEAD
-=======
-    public void sendToChoice(int id){
-        if (id == R.id.closeHam) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (id == R.id.hamNewReq) {
-            startActivity(new Intent(this, CreateHelpRequestActivity.class));
-        } else if (id == R.id.hamBrowse) {
-            startActivity(new Intent(this, BrowseHelpRequestsActivity.class));
-        } else if (id == R.id.hamReview) {
-            startActivity(new Intent(this, ReviewActivity.class));
-        } else if (id == R.id.hamMessage) {
-            startActivity(new Intent(this, MessagesListActivity.class));
-        } else if (id == R.id.hamStats) {
-            startActivity(new Intent(this, ViewStatistics.class));
-        }
-    }
->>>>>>> origin/main
 }
