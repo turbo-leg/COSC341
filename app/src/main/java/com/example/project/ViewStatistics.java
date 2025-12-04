@@ -40,10 +40,11 @@ public class ViewStatistics extends AppCompatActivity {
     private int listingsCreated = 0;
     private int totalRating = 0;
     private int numberOfReviews = 0;
+    private int listingsHelped = 0;
 
     //TODO implement to count people helped when data is in firebase
     //private int peopleHelped = 0;
-    private String catMostNeedHelp;
+    private int [] categoryMostHelped = {0,0,0,0,0,0,0};
     private int[] categoryMostListed = {0,0,0,0,0,0,0};
 
     //TODO implement to count most common help category when data is added to firebase
@@ -85,13 +86,21 @@ public class ViewStatistics extends AppCompatActivity {
                 for (DataSnapshot listing : listingsSnapshot.getChildren()) {
                     String requesterName = listing.child("requesterName").getValue(String.class);
                     String category = listing.child("category").getValue(String.class);
-                    if (category != null)
-                        incrementCategory(category);
+                    String helper = listing.child("helperName").getValue(String.class);
+                    Boolean complete = listing.child("complete").getValue(Boolean.class);
+                    //increments if you list that category
+                    if (category != null && requesterName != null && requesterName.equals(user))
+                        incrementCategoryListed(category);
+                    //increments if you help that category
+                    if (category != null && helper != null && helper.equals(user))
+                        incrementCategoryHelped(category);
 
                     //increments if listing was created by user
-                    if (requesterName != null && requesterName.equals(user)) {
+                    if (requesterName != null && requesterName.equals(user))
                         listingsCreated++;
-                    }
+                    if (complete != null && complete && helper != null && helper.equals(user))
+                        listingsHelped++;
+
                 }
                 listingsLoaded = true;
                 if (reviewsLoaded) updateUI();
@@ -126,8 +135,8 @@ public class ViewStatistics extends AppCompatActivity {
     }
     private void updateUI() {
         ((TextView)findViewById(R.id.numOfList2)).setText(Integer.toString(listingsCreated));
-        String mostCommonCat = findHighestCat(categoryMostListed);
-        ((TextView)findViewById(R.id.catneedhelp2)).setText(mostCommonCat);
+        String commonCatList = findHighestCat(categoryMostListed);
+        ((TextView)findViewById(R.id.catneedhelp2)).setText(commonCatList);
         ((TextView)findViewById(R.id.numOfReview2)).setText(Integer.toString(numberOfReviews));
         if (numberOfReviews == 0){
             ((TextView) findViewById(R.id.avgReview2)).setText("N/A");
@@ -137,9 +146,12 @@ public class ViewStatistics extends AppCompatActivity {
             String str = format.format(avgRating);
             ((TextView) findViewById(R.id.avgReview2)).setText(str);
         }
+        String commonCatHelp = findHighestCat(categoryMostHelped);
+        ((TextView)findViewById(R.id.catYouHelp2)).setText(commonCatHelp);
+        ((TextView)findViewById(R.id.numOfHelp2)).setText(Integer.toString(listingsHelped));
 
     }
-    public void incrementCategory (String cat){
+    public void incrementCategoryListed (String cat){
         switch (cat){
             case "Gardening": categoryMostListed[0]++; break;
             case "Car Maintenance": categoryMostListed[1]++; break;
@@ -148,6 +160,17 @@ public class ViewStatistics extends AppCompatActivity {
             case "Pet Care": categoryMostListed[4]++; break;
             case "Moving": categoryMostListed[5]++; break;
             case "Miscellaneous": categoryMostListed[6]++; break;
+        }
+    }
+    public void incrementCategoryHelped (String cat){
+        switch (cat){
+            case "Gardening": categoryMostHelped[0]++; break;
+            case "Car Maintenance": categoryMostHelped[1]++; break;
+            case "Babysitting": categoryMostHelped[2]++; break;
+            case "Cooking": categoryMostHelped[3]++; break;
+            case "Pet Care": categoryMostHelped[4]++; break;
+            case "Moving": categoryMostHelped[5]++; break;
+            case "Miscellaneous": categoryMostHelped[6]++; break;
         }
     }
     public String findHighestCat(int [] cat){
