@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -66,6 +68,7 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
 
     ListingAdapter listingAdapter;
     String searchedText;
+    FloatingActionButton fabAddRequest;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm");
 
@@ -129,6 +132,7 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
         lvCategory = findViewById(R.id.listView);
         sortSpin = findViewById(R.id.spinner);
         sv = findViewById(R.id.searchView);
+        fabAddRequest = findViewById(R.id.fabAddRequest);
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -147,6 +151,14 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
         intializeList();
         setupSortListener();
         setupListListener();
+        fabAddRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create an Intent to launch CreateHelpRequestActivity
+                Intent intent = new Intent(BrowseHelpRequestsActivity.this, CreateHelpRequestActivity.class);
+                startActivity(intent);
+            }
+        });
 
         Log.e("COSC341", "After intializeList()");
     }
