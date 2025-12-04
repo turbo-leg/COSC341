@@ -57,14 +57,17 @@ public class LeaderBoardActivity extends AppCompatActivity {
                             String helperName = reviewData.child("helper").getValue(String.class);
                             Integer rating = reviewData.child("rating").getValue(Integer.class);
 
-                            if (rating != null && helperName != null)
-                                switch (rating){
-                                    case 1: helperScores.put(helperName, helperScores.get(helperName)-30); break;
-                                    case 2: helperScores.put(helperName, helperScores.get(helperName)-10); break;
-                                    case 3: helperScores.put(helperName, helperScores.get(helperName)+20);break;
-                                    case 4: helperScores.put(helperName, helperScores.get(helperName)+30);break;
-                                    case 5: helperScores.put(helperName, helperScores.get(helperName)+50);break;
+                            if (rating != null && helperName != null && helperScores.containsKey(helperName)) {
+                                int score = helperScores.get(helperName);
+                                switch (rating) {
+                                    case 1: helperScores.put(helperName, score - 30); break;
+                                    case 2: helperScores.put(helperName, score - 10); break;
+                                    case 3: helperScores.put(helperName, score + 20); break;
+                                    case 4: helperScores.put(helperName, score + 30); break;
+                                    case 5: helperScores.put(helperName, score + 50); break;
                                 }
+                            }
+
                         }
                         root.child("Listings").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -72,9 +75,9 @@ public class LeaderBoardActivity extends AppCompatActivity {
                                 for (DataSnapshot listingData: listingSnapshot.getChildren()) {
                                     String helperNameListing = listingData.child("helper").getValue(String.class);
                                     Boolean complete = listingData.child("complete").getValue(Boolean.class);
-
-                                    if (complete && helperNameListing != null)
-                                        helperScores.put(helperNameListing, helperScores.get(helperNameListing)+30);
+                                    if (Boolean.TRUE.equals(complete) && helperNameListing != null && helperScores.containsKey(helperNameListing)) {
+                                        helperScores.put(helperNameListing, helperScores.get(helperNameListing) + 30);
+                                    }
                                 }
                                 buildLeaderboard();
                             }
@@ -112,9 +115,10 @@ public class LeaderBoardActivity extends AppCompatActivity {
             return scoreB - scoreA;
         });
 
-        display.set(0, "1st Place! " + display.get(0));
-        display.set(1, "2nd Place! " + display.get(1));
-        display.set(2, "3rd Place! " + display.get(2));
+        if (!display.isEmpty()) display.set(0, "1st Place! " + display.get(0));
+        if (display.size() > 1) display.set(1, "2nd Place! " + display.get(1));
+        if (display.size() > 2) display.set(2, "3rd Place! " + display.get(2));
+
 
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, display);
