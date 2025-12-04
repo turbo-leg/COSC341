@@ -267,6 +267,7 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
                                                             if (listing.getTitle().equals(l.getTitle())) {
                                                                 l.setHelperName("Me");
                                                                 listingRef.child(key).setValue(l);
+                                                                Toast.makeText(BrowseHelpRequestsActivity.this, "Listing successfully accpeted!", Toast.LENGTH_SHORT).show();
                                                             }
                                                     }
                                                 }
@@ -507,10 +508,6 @@ public class BrowseHelpRequestsActivity extends AppCompatActivity{
                 }
             }
         });
-
-
-
-        Toast.makeText(getApplicationContext(), "You are in date popup", Toast.LENGTH_SHORT).show();
     }
 
     public boolean seeIfChecked(CheckBox checkBox){
