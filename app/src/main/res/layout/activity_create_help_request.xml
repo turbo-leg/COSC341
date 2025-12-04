@@ -26,6 +26,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/tvCreateRequestTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create a Help Request"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/hamButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/hamButton" />
+
     <!-- Form Fields Container -->
     <ScrollView
         android:layout_width="0dp"
@@ -35,36 +48,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/backButton">
+        app:layout_constraintTop_toBottomOf="@+id/hamButton">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
-            android:text="Create a Help Request"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/hamButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/hamButton" />
-
-        <ScrollView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/hamButton">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
-=======
             android:padding="24dp">
->>>>>>> origin/main
 
             <!-- Request Title -->
             <com.google.android.material.textfield.TextInputLayout
